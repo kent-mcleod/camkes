@@ -10,14 +10,12 @@
  * @TAG(DATA61_BSD)
  */
 
-#include <rumprun_camkes.h>
 #include <buffer.h>
 
-import <rumprun.camkes>;
+component Server {
+    control;
+    dataport Buf(REVERSE_STRING_BUFSIZE) buffer;
+    consumes SomethingHappenedEvent ev;
+    emits SomethingHappenedEvent ev1;
 
-component rumprun_rust {
-    RUMPRUN_COMPONENT_DEFINITION()
-    dataport Buf(REVERSE_STRING_BUFSIZE) camkes_buffer;
-    emits SomethingHappenedEvent camkes_ev;
-    consumes SomethingHappenedEvent camkes_ev1;
 }

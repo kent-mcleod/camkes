@@ -10,14 +10,8 @@
  * @TAG(DATA61_BSD)
  */
 
-#include <rumprun_camkes.h>
-#include <buffer.h>
+#pragma once
 
-import <rumprun.camkes>;
-
-component rumprun_rust {
-    RUMPRUN_COMPONENT_DEFINITION()
-    dataport Buf(REVERSE_STRING_BUFSIZE) camkes_buffer;
-    emits SomethingHappenedEvent camkes_ev;
-    consumes SomethingHappenedEvent camkes_ev1;
-}
+#define REVERSE_STRING_BUFSIZE 4096
+#define REVERSE_STRING_END_IDX (REVERSE_STRING_BUFSIZE - 1)
+#define REVERSE_STRING_MAX_LEN (REVERSE_STRING_END_IDX - 1)

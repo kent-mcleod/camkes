@@ -14,6 +14,7 @@
 import <rumprun.camkes>;
 import "components/hellorust/hellorust.camkes";
 import "components/hello/hello.camkes";
+import "components/reverse_string/server.camkes";
 
 assembly {
  composition {
@@ -24,10 +25,17 @@ assembly {
 
      component rumprun hello2;
      RUMPRUN_META_CONNECTION(hello2, rrpl)
+
+     component Server server;
+
+     connection seL4SharedData conn(from hello1.camkes_buffer, to server.buffer);
+     connection seL4Notification simpleEvent1(from hello1.camkes_ev, to server.ev);
+     connection seL4Notification simpleEvent2(from server.ev1, to hello1.camkes_ev1);
  }
 
  configuration {
-    hello1.rump_config = {"cmdline": "hello Rust World!" };
+    hello1.rump_config = {"cmdline": "hello Rust World!",
+                          "interfaces_to_expose": ["camkes_buffer", "camkes_ev", "camkes_ev1"] };
     RUMPRUN_COMPONENT_CONFIGURATION(hello1, 0)
 
     hello2.rump_config = {"cmdline": "hello World!" };
