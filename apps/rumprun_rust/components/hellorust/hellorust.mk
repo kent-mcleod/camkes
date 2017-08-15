@@ -23,5 +23,5 @@ RUST_SOURCE_DIR := ${CURRENT_DIR}/rustest/
 rumprun_rust_rumpbin := hellorust
 
 hellorust: $(RUST_SOURCE_DIR)/src/main.rs
-	cd $(RUST_SOURCE_DIR) &&	cargo build --target=x86_64-rumprun-netbsd
+	cd $(RUST_SOURCE_DIR) &&	cargo build --target=x86_64-rumprun-netbsd --verbose
 	cp $(RUST_SOURCE_DIR)/target/x86_64-rumprun-netbsd/debug/rustest $(BUILD_DIR)/$@

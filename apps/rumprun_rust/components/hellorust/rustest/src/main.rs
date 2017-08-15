@@ -12,7 +12,6 @@ fn main() {
 }
 
 #[no_mangle]
-#[link(name = "hello1.instance")]
 extern {
     fn camkes_ev_emit();
     fn camkes_ev1_wait(); 
