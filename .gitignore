@@ -1,0 +1,5 @@
+# ignore temporary files
+*.*~
+
+# ignore rust target
+apps/rumprun_rust/components/hellorust/rustest/target/

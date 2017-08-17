@@ -21,7 +21,8 @@ int run(void) {
     while(true) {
         /* Wait for event */
         ev_wait();
-        printf("Got string: %s\n", buffer_str);
+        printf("Server: Got string: %s\n", buffer_str);
+				printf("Server: Buffer[0]=%u\n", buffer_str[0]);
 
         int len = strnlen(buffer_str, REVERSE_STRING_MAX_LEN);
         for (int i = 0; i < len / 2; ++i) {
