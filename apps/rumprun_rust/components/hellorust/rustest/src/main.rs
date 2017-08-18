@@ -3,10 +3,12 @@
 fn main() {
     println!("Hello rust!");
     unsafe {
-				*camkes_buffer.offset(0) = 'a' as u8;
-				*camkes_buffer.offset(1) = 'b' as u8;
-				*camkes_buffer.offset(2) = 'c' as u8;
-				*camkes_buffer.offset(3) = '\0' as u8;
+      println!("{:?} {:?}", camkes_buffer, *camkes_buffer);
+				*(*camkes_buffer).offset(0) = 'a' as u8;
+				*(*camkes_buffer).offset(1) = 'b' as u8;
+				*(*camkes_buffer).offset(2) = 'c' as u8;
+				*(*camkes_buffer).offset(3) = '\0' as u8;
+
         (*((&camkes_ev_emit as *const *const extern "C" fn()) as *const extern "C" fn()))();
     }
     println!("Waiting for event!");
@@ -15,7 +17,7 @@ fn main() {
     }
     println!("Got event!");
 		unsafe {
-			println!("RUST: Buffer: {}", *camkes_buffer);
+			println!("RUST: Buffer: {}", **camkes_buffer);
 		}
 		
 
@@ -29,5 +31,5 @@ extern "C" {
 		static camkes_ev1_wait: *const extern "C" fn();
 
     #[linkage = "extern_weak"]
-		static camkes_buffer: *mut u8;
+		static camkes_buffer: *const*mut u8;
 }
