@@ -10,6 +10,11 @@
  * @TAG(DATA61_BSD)
  */
 
-procedure Addition {
-    dataport_ptr_t calculate(in dataport_ptr_t ptr);
-};
+import "../../interfaces/AADLDataport.idl4";
+
+component Monitor {
+    dataport Buf wd;
+    dataport Buf rd;
+    provides AADLDataport a;
+}
+

@@ -12,10 +12,9 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-project(aadl-monitor C)
+project(ComponentMonitor C)
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Receiver)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Monitor)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Sender)
-
-DeclareCAmkESRootserver(aadl-monitor.camkes)
+DeclareCAmkESComponent(Monitor
+    SOURCES src/monitor.c
+    INCLUDES include
+)

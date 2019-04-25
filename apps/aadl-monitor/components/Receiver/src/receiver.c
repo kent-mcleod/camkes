@@ -12,18 +12,22 @@
 
 #include <camkes.h>
 #include <stdio.h>
+//#include "payload.h"
 #include <camkes/dataport.h>
-#include "payload.h"
 
-dataport_ptr_t a_calculate(dataport_ptr_t ptr) {
-    struct payload *p1, *p2;
-    p1 = (struct payload*)dataport_unwrap_ptr(ptr);
-    p2 = (struct payload*)((void*)d + 2048);
+#define BUF_SIZE 2048
+
+int run(void) {
     const char *name = get_instance_name();
-    p2->result = 0;
-    for (int i = 0; i < p1->sz; i++) {
-        printf("%s: Adding %d\n", name, p1->operands[i]);
-        p2->result += p1->operands[i];
+
+    int len = 0;
+    char *p = (char *)d;
+    p[0] = '\0';
+
+    while (len == 0) {
+	len = a_read(dataport_wrap_ptr((void*)p), BUF_SIZE);
+    	printf("%s: read message (len: %d) \"%s\"\n", name, len, p);
     }
-    return dataport_wrap_ptr((void*)p2);
+
+    return 0;
 }

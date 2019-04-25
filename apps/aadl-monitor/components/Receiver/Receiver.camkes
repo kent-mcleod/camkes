@@ -10,10 +10,11 @@
  * @TAG(DATA61_BSD)
  */
 
-import "../../interfaces/Addition.idl4";
+import "../../interfaces/AADLDataport.idl4";
 
 component Receiver {
+    control;
     dataport Buf d;
-    provides Addition a;
+    uses AADLDataport a;
 }
 

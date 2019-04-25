@@ -13,15 +13,25 @@
 import <std_connector.camkes>;
 
 import "components/Receiver/Receiver.camkes";
+import "components/Monitor/Monitor.camkes";
 import "components/Sender/Sender.camkes";
 
 assembly {
     composition {
         component Receiver receiver;
+	component Monitor monitor;
         component Sender sender;
 
-        connection seL4SharedData s(from sender.d, to receiver.d); 
-        connection seL4RPCCall p(from sender.a, to receiver.a);
+        connection seL4SharedData sd(from sender.d, to monitor.wd); 
+        connection seL4SharedData rd(from receiver.d, to monitor.rd); 
+        connection seL4RPCCall sp(from sender.a, to monitor.a);
+        connection seL4RPCCall rp(from receiver.a, to monitor.a);
     }
+   configuration {
+        sender._priority = 50;
+        receiver._priority = 50;
+        monitor.a_priority = 60;
+   }
+
 }
 
