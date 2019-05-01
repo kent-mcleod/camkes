@@ -1,0 +1,42 @@
+/*
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(DATA61_BSD)
+ */
+
+import <std_connector.camkes>;
+
+import "components/Receiver/Receiver.camkes";
+import "components/Monitor/Monitor.camkes";
+import "components/Sender/Sender.camkes";
+
+assembly {
+    composition {
+        component Receiver receiver;
+	component Monitor monitor;
+        component Sender sender;
+
+        connection seL4SharedData sd(from sender.d, to monitor.wd); 
+	connection seL4Notification se(from sender.e, to monitor.e);
+        connection seL4SharedData rd(from receiver.d, to monitor.rd); 
+        connection seL4RPCCall rp(from receiver.a, to monitor.a);
+    }
+   configuration {
+	sender.d_access = "W";
+	monitor.wd_access = "R";
+	monitor.rd_access = "W";
+	receiver.d_access = "R";
+
+        sender._priority = 50;
+        receiver._priority = 40;
+        monitor.a_priority = 60;
+   }
+
+}
+
