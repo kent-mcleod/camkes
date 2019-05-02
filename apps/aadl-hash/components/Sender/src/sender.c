@@ -15,15 +15,12 @@
 #include <string.h>
 #include <camkes/dataport.h>
 
-bool started = false;
+void post_init(void) {
+    *hashd = 1;
+}
 
 void acq_write(void) {
-    if (!started) {
-        *hashd = 1;
-        started = true;
-    } else {
-        (*hashd)++;
-    }
+    (*hashd)++;
 }
 
 void rel_write(void) {
