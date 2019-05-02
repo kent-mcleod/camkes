@@ -15,31 +15,33 @@
 #include <string.h>
 #include <camkes/dataport.h>
 
-#define BUF_SIZE 2048
-char buf[BUF_SIZE];
-
 bool started = false;
 
-void do_write(void *p, int size) {
+void acq_write(void) {
     if (!started) {
         *hashd = 1;
-	started = true;
+        started = true;
     } else {
-	(*hashd)++;
+        (*hashd)++;
     }
-    memcpy(d, p, size);
+}
+
+void rel_write(void) {
     (*hashd)++;
 }
 
 int run(void) {
     int i = 0;
+    char *p = (char *)d;
 
     while (1) {
-        sprintf(buf, "%s: this is my messsage %d", get_instance_name(), i++);
+	acq_write();
 
-        do_write(buf, strlen(buf));
+        sprintf(p, "%s: this is my messsage %d", get_instance_name(), i++);
 
-        printf("%s: wrote message \"%s\" to %p (hashd: %llu, %p)\n", get_instance_name(), buf, buf, *hashd, hashd);
+        rel_write();
+
+        printf("%s: wrote message \"%s\" to %p (hashd: %llu, %p)\n", get_instance_name(), p, p, *hashd, hashd);
     }
 }
 

@@ -15,21 +15,22 @@
 #include <string.h>
 #include <camkes/dataport.h>
 
-
 #define BUF_SIZE 2048
 char buf[BUF_SIZE];
-
-bool started = false;
+uint64_t prev_hash = 0;
 
 void do_read(void *p, int size) {
     char b[size];
     uint64_t h;
 
     h = *hashd;
+    if (h == prev_hash) return;
+
     memcpy(b, d, size);
 
     if (h == *hashd) {
         memcpy(p, b, size);
+	prev_hash = h;
     }
 }
 
