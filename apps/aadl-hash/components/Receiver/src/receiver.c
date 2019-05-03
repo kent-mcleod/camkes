@@ -19,12 +19,37 @@
 char buf[BUF_SIZE];
 uint64_t prev_hash = 0;
 
+// This still has a problem in that if the read fails for whatever
+// reason (i.e. the read started during a write, or the sender made a 
+// write during the read) then the receiver will use the most
+// recently *read* buffer.  Ideally it should read the most recently
+// *written* buffer.
+// 
+// Here's an example of the undesireable behaviour:
+//
+// sender: wrote message "sender: this is my messsage 89" to 0x145000 (hashd: 180, 0x146000)
+// sender: writing sender: this is my messsage 90 (hashd: 181)
+// sender: wrote message "sender: this is my messsage 90" to 0x145000 (hashd: 182, 0x146000)
+// receiver: read message (len: 30) "sender: this is my messsage 90" from 0x133570 (hashd: 182 0x147000)
+// ...
+// sender: writing sender: this is my messsage 91 (hashd: 183)
+// sender: wrote message "sender: this is my messsage 91" to 0x145000 (hashd: 184, 0x146000)
+// ...
+// sender: wrote message "sender: this is my messsage 99" to 0x145000 (hashd: 200, 0x146000)
+// sender: writing sender: this is m
+// receiver: read message (len: 30) "sender: this is my messsage 90" from 0x133570 (hashd: 201 0x147000)
+// ...
+//
+// receiver reads message "90", while really, it should be reading message "99"
+//
+
 void do_read(void *p, int size) {
     char b[size];
     uint64_t h;
 
     h = *hashd;
-    if (h == prev_hash) return;
+    if (h == prev_hash) return; // nothing has changed
+    if (h % 2 != 0) return; // the sender is writing
 
     memcpy(b, d, size);
 

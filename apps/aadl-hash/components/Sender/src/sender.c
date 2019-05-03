@@ -16,7 +16,7 @@
 #include <camkes/dataport.h>
 
 void post_init(void) {
-    *hashd = 1;
+    *hashd = 0;
 }
 
 void acq_write(void) {
@@ -35,6 +35,7 @@ int run(void) {
 	acq_write();
 
         sprintf(p, "%s: this is my messsage %d", get_instance_name(), i++);
+	printf("%s: writing %s (hashd: %llu)\n", get_instance_name(), p, *hashd);
 
         rel_write();
 
