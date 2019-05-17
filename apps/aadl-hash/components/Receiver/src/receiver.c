@@ -49,11 +49,12 @@ void do_read(void *p, int size) {
 
     h = *hashd;
     if (h == prev_hash) return; // nothing has changed
-    if (h % 2 != 0) return; // the sender is writing
+    if (h == 0) return; // the sender is writing
 
     memcpy(b, d, size);
 
     if (h == *hashd) {
+	// nothing changed during reading
         memcpy(p, b, size);
 	prev_hash = h;
     }

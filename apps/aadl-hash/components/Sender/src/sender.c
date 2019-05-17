@@ -15,16 +15,19 @@
 #include <string.h>
 #include <camkes/dataport.h>
 
+uint64_t hash_copy;
+
 void post_init(void) {
     *hashd = 0;
 }
 
 void acq_write(void) {
-    (*hashd)++;
+    hash_copy = *hashd;
+    *hashd = 0;
 }
 
 void rel_write(void) {
-    (*hashd)++;
+    *hashd = hash_copy + 1;
 }
 
 int run(void) {
