@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, Data61
+ * Copyright 2019, Data61
  * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
  * ABN 41 687 119 230.
  *
@@ -13,54 +13,17 @@
 #include <camkes.h>
 #include <stdio.h>
 #include <string.h>
-#include <camkes/dataport.h>
 
 #include <virtqueue.h>
 #include <camkes/virtqueue.h>
 
 
-uint64_t hash_copy;
-
-void post_init(void) {
-    *hashd = 0;
-}
-
-void acq_write(void) {
-    hash_copy = *hashd;
-    *hashd = 0;
-}
-
-void rel_write(void) {
-    *hashd = hash_copy + 1;
-}
-
-int virtqueue_init(void); 
-void vq_send(char *s, int len); 
-
-char p[1024];
-
-int run(void) {
-
-    virtqueue_init();
-
-    int i = 0;
-
-    while (1) {
-
-        sprintf(p, "%s: this is my messsage %d", get_instance_name(), i++);
-	printf("%s: writing %s\n", get_instance_name(), p);
-
-	vq_send(p, strlen(p));
-
-        printf("%s: wrote message \"%s\"\n", get_instance_name(), p);
-    }
-}
 
 virtqueue_driver_t * vq1;
 
 void handle_vq_callback(virtqueue_driver_t *vq);
 
-void vq_send(char *s, int len) {
+int vq_send(char *s, int len) {
     volatile void *alloc_buffer = NULL;
 
     /* Check if there is data still waiting in the virtqueue */
@@ -71,7 +34,8 @@ void vq_send(char *s, int len) {
 
     int err = camkes_virtqueue_buffer_alloc(vq1, &alloc_buffer, len);
     if (err) {
-        return;
+        ZF_LOGE("Sender: vq1 buffer alloc failed");
+        return 1;
     }
 
     char *buffer_data = (char *)alloc_buffer;
@@ -79,16 +43,18 @@ void vq_send(char *s, int len) {
 
     err = virtqueue_driver_enqueue(vq1, alloc_buffer, len);
     if (err != 0) {
-        ZF_LOGE("Sender vq1 enqueue failed");
+        ZF_LOGE("Sender: vq1 enqueue failed");
         camkes_virtqueue_buffer_free(vq1, alloc_buffer);
-        return;
+        return 1;
     }
 
     err = virtqueue_driver_signal(vq1);
     if (err != 0) {
-        ZF_LOGE("Sender vq1 signal failed");
-        return;
+        ZF_LOGE("Sender: vq1 signal failed");
+        return 1;
     }
+
+    return 0;
 
 }
 
@@ -98,7 +64,7 @@ void handle_vq_callback(virtqueue_driver_t *vq) {
     size_t buf_size = 0;
     int err = virtqueue_driver_dequeue(vq, &buf, &buf_size);
     if (err) {
-        ZF_LOGE("Sender virtqueue dequeue failed");
+        ZF_LOGE("Sender: virtqueue dequeue failed");
         return;
     }
     /* Clean up and free the buffer we allocated */
@@ -107,7 +73,7 @@ void handle_vq_callback(virtqueue_driver_t *vq) {
 
 
 void vq_wait_callback(void) {
-    printf("vq_wait_callback\n");
+    // printf("Sender: vq_wait_callback\n");
 
     int err;
 
@@ -116,7 +82,7 @@ void vq_wait_callback(void) {
         handle_vq_callback(vq1);
     }
     if (vq1_poll_res == -1) {
-        ZF_LOGF("Sender vq1 poll failed");
+        ZF_LOGF("Sender: vq1 poll failed");
     }
 
 }
@@ -125,8 +91,43 @@ int virtqueue_init(void) {
     /* Initialise virtqueue vq1 */
     int err = camkes_virtqueue_driver_init(&vq1, 0);
     if (err) {
-        ZF_LOGE("Unable to initialise vq1");
+        ZF_LOGE("Sender: Unable to initialise vq1");
         return 1;
+    } else {
+	return 0;
     }
 
+}
+
+int aadl_raise_event_data(void *data, size_t len) {
+    return vq_send(data, len);
+}
+
+#define BUF_SIZE 1024
+
+char buf[BUF_SIZE];
+
+int run(void) {
+
+    virtqueue_init();
+
+    int i = 0;
+    int err = 0;
+
+    while (1) {
+
+        sprintf(buf, "%s: this is my messsage %d", get_instance_name(), i++);
+	// printf("%s: writing \"%s\"\n", get_instance_name(), buf);
+
+	err = aadl_raise_event_data(buf, strlen(buf));
+
+	/*
+	if (!err) {
+            printf("%s: wrote message \"%s\"\n", get_instance_name(), buf);
+	}
+	*/
+	if (err) {
+	    ZF_LOGE("Sender: failed to raise event");
+	}
+    }
 }

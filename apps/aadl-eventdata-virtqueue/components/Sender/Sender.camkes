@@ -14,12 +14,11 @@ import <VirtQueue/VirtQueue.camkes>;
 
 component Sender {
     control;
-    dataport Buf d;
-    dataport uint64_t hashd;
+//    dataport Buf d;
+//    dataport uint64_t hashd;
     /* Virtqueue connection */
     uses VirtQueueDrv vq1;
     emits Callback self;
     consumes Callback vq_wait;
-
 }
 

@@ -15,12 +15,11 @@ import <VirtQueue/VirtQueue.camkes>;
 
 component Receiver {
 //    control;
-    dataport Buf d;
-    dataport uint64_t hashd;
+//    dataport Buf d;
+//    dataport uint64_t hashd;
     /* Virtqueue connection for read and write */
     uses VirtQueueDev vq1;
     emits Callback self;
     consumes Callback vq_wait;
-
 }
 

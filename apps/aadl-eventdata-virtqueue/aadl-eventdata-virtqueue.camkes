@@ -28,14 +28,14 @@ assembly {
 	connection seL4GlobalAsynchCallback receiver_global_callback(from receiver.self, to receiver.vq_wait);
 	connection seL4GlobalAsynchCallback sender_global_callback(from sender.self, to sender.vq_wait);
 
-        connection seL4SharedData sd(from sender.d, to receiver.d); 
-        connection seL4SharedData shash(from sender.hashd, to receiver.hashd); 
+//        connection seL4SharedData sd(from sender.d, to receiver.d); 
+//        connection seL4SharedData shash(from sender.hashd, to receiver.hashd); 
    }
    configuration {
-        sender.d_access = "W";
-        receiver.d_access = "R";
-        sender.hashd_access = "RW";
-        receiver.hashd_access = "R";
+//        sender.d_access = "W";
+//        receiver.d_access = "R";
+//        sender.hashd_access = "RW";
+//        receiver.hashd_access = "R";
 
         sender._priority = 50;
         receiver._priority = 50;
