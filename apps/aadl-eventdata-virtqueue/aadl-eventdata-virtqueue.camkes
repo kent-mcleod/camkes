@@ -1,0 +1,63 @@
+/*
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(DATA61_BSD)
+ */
+
+import <std_connector.camkes>;
+import <VirtQueue/VirtQueue.camkes>;
+import <global-connectors.camkes>;
+
+
+import "components/Receiver/Receiver.camkes";
+import "components/Sender/Sender.camkes";
+
+assembly {
+   composition {
+        component Receiver receiver;
+        component Sender sender;
+        component VirtQueueInit vqinit1;
+
+	connection seL4VirtQueues virtq_conn1(to vqinit1.init, from sender.vq1, from receiver.vq1);
+	connection seL4GlobalAsynchCallback receiver_global_callback(from receiver.self, to receiver.vq_wait);
+	connection seL4GlobalAsynchCallback sender_global_callback(from sender.self, to sender.vq_wait);
+
+        connection seL4SharedData sd(from sender.d, to receiver.d); 
+        connection seL4SharedData shash(from sender.hashd, to receiver.hashd); 
+   }
+   configuration {
+        sender.d_access = "W";
+        receiver.d_access = "R";
+        sender.hashd_access = "RW";
+        receiver.hashd_access = "R";
+
+        sender._priority = 50;
+        receiver._priority = 50;
+
+        receiver.vq1_id = 0;
+        receiver.vq1_attributes = "10";
+        receiver.vq1_global_endpoint = "sender";
+        receiver.vq1_badge = 10;
+        receiver.vq_wait_global_endpoint = "receiver";
+        receiver.self_global_endpoint = "receiver";
+
+        sender.vq1_id = 0;
+        sender.vq1_attributes = "10";
+        sender.vq1_global_endpoint = "receiver";
+        sender.vq1_badge = 10;
+        sender.vq_wait_global_endpoint = "sender";
+        sender.self_global_endpoint = "sender";
+
+        vqinit1.init_topology = [{ "drv" : "sender.vq1", "dev" : "receiver.vq1" }];
+
+
+
+   }
+}
+
