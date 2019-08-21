@@ -15,7 +15,7 @@
 #include <string.h>
 
 #define BUF_SIZE 1024
-#define QUEUE_LEN 5
+#define QUEUE_LEN 5  // should be based on max_queue variable
 
 struct q_e {
     size_t len;
@@ -30,9 +30,11 @@ struct queue {
 } q = {.head=0, .tail=0, .len=0};
     
 
-void event_raise(dataport_ptr_t ptr, size_t len) {
+void sevent_raise(dataport_ptr_t ptr, size_t len) {
+    int do_emit = 0;
     size_t e_len;
     char *s = (char *)dataport_unwrap_ptr(ptr);
+    m_lock();
     if (q.len < QUEUE_LEN) {
 	e_len = MIN(len, BUF_SIZE);
         memcpy(q.elt[q.head].data, dataport_unwrap_ptr(ptr), e_len);
@@ -40,15 +42,23 @@ void event_raise(dataport_ptr_t ptr, size_t len) {
 	q.head = (q.head + 1) % QUEUE_LEN;
 	q.len++;
 	//printf("Monitor: event_raise; added event head %d, tail %d, len %d\n", q.head, q.tail, q.len);
-	e_emit();
+	do_emit = 1;
     } else {
 	// drop silently
-        // printf("Monitor: event_raise - *dropped* event q.len: %d, data: \"%s\"\n", q.len, s);
+        printf("Monitor: event_raise - *dropped* event q.len: %d, data: \"%s\"\n", q.len, s);
+    }
+    m_unlock();
+
+    if (do_emit) {
+	e_emit();
     }
 }
 
-int event_get_eventdata(dataport_ptr_t *ptr, size_t *len) {
+int revent_get_eventdata(dataport_ptr_t *ptr, size_t *len) {
     int new_tail = 0;
+    int res = 0;
+
+    m_lock();
     if (q.len > 0) {
         memcpy(dr, q.elt[q.tail].data, q.elt[q.tail].len);
 	*len = q.elt[q.tail].len;
@@ -57,10 +67,13 @@ int event_get_eventdata(dataport_ptr_t *ptr, size_t *len) {
 	q.tail = new_tail;
 	q.len--;
 	// printf("Monitor: get_eventdata; new head %d, tail %d, len %d\n", q.head, q.tail, q.len);
-	return 1;
+	res = 1;
     } else {
 	// printf("Monitor: get_eventdata: no eventdata available q.len: %d\n", q.len);
-	return 0;
+	res = 0;
     }
+    m_unlock();
+
+    return res;
 }
 

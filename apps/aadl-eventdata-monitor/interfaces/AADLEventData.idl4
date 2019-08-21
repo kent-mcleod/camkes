@@ -10,7 +10,9 @@
  * @TAG(DATA61_BSD)
  */
 
-procedure AADLEvent {
+procedure AADLEvent_Sender {
     void raise(in dataport_ptr_t data_ptr, in size_t len);
+};
+procedure AADLEvent_Receiver {
     int get_eventdata(out dataport_ptr_t data_ptr, out size_t len);
 };

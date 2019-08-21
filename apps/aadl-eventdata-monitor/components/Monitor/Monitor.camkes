@@ -13,7 +13,9 @@
 import "../../interfaces/AADLEventData.idl4";
 
 component Monitor {
-    provides AADLEvent event;
+    has mutex m;
+    provides AADLEvent_Sender sevent;
+    provides AADLEvent_Receiver revent;
     emits ReceiveEvent e;
     dataport Buf ds;
     dataport Buf dr;

@@ -14,7 +14,7 @@ import "../../interfaces/AADLEventData.idl4";
 
 component Sender {
     control;
-    uses AADLEvent event;
+    uses AADLEvent_Sender event;
     dataport Buf d;
 }
 

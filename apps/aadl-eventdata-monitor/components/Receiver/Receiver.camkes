@@ -14,7 +14,7 @@ import "../../interfaces/AADLEventData.idl4";
 
 component Receiver {
     control;
-    uses AADLEvent event;
+    uses AADLEvent_Receiver event;
     consumes ReceiveEvent e;
     dataport Buf d;
 }
