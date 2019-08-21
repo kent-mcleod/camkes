@@ -23,8 +23,8 @@ assembly {
         component Sender sender;
 
 	connection seL4Notification mr(from monitor.e, to receiver.e);
-        connection seL4RPCCall rm(from receiver.event, to monitor.event);
-        connection seL4RPCCall sm(from sender.event, to monitor.event);
+        connection seL4RPCCall rm(from receiver.event, to monitor.revent);
+        connection seL4RPCCall sm(from sender.event, to monitor.sevent);
     }
     configuration {
 	monitor.max_queue = 10;

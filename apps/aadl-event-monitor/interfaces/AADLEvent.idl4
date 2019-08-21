@@ -10,7 +10,10 @@
  * @TAG(DATA61_BSD)
  */
 
-procedure AADLEvent {
+procedure AADLEvent_Sender {
     void raise(void);
+};
+
+procedure AADLEvent_Receiver {
     int get_events(void);
 };

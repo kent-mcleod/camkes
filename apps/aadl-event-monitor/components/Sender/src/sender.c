@@ -13,7 +13,7 @@
 #include <camkes.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <sel4/sel4.h>
 
 int aadl_raise_event(void) {
     event_raise();
@@ -30,8 +30,11 @@ int run(void) {
 
         err = aadl_raise_event();
 	if (!err) {
-            printf("%s: rasied event %d\n", get_instance_name(), i);
 	    i++;
+	    if (i % 7 == 0) {
+	        //seL4_Yield();
+                printf("%s: rasied events %d\n", get_instance_name(), i);
+	    }
 	} else {
             ZF_LOGE("Sender: failed to raise event %d", i);
         }

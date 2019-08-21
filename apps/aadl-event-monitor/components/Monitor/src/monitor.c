@@ -16,16 +16,24 @@
 
 int num_events = 0;
 
-void event_raise(void) {
+void sevent_raise(void) {
+    int do_emit = 0;
+    (void)m_lock();
     if (num_events < max_queue) {
         num_events++;
+	do_emit = 1;
+    }
+    (void)m_unlock();
+    if (do_emit) {
         e_emit();
     }
 }
 
-int event_get_events(void) {
+int revent_get_events(void) {
+    (void)m_lock();
     int ne = num_events;
     num_events = 0;
+    (void)m_unlock();
     return ne;
 }
 

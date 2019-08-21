@@ -13,7 +13,9 @@
 import "../../interfaces/AADLEvent.idl4";
 
 component Monitor {
-    provides AADLEvent event;
+    has mutex m;
+    provides AADLEvent_Sender sevent;
+    provides AADLEvent_Receiver revent;
     emits ReceiveEvent e;
 
     attribute int max_queue = 5;

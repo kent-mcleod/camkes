@@ -25,7 +25,7 @@ static void handler(void *v) {
     for (int i = 0; i < ne; i++) {
     	aadl_event_port_handler();
     }
-    e_reg_callback(&handler, NULL);
+    while (! e_reg_callback(&handler, NULL));
 }
 
 int run(void) {
