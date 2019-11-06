@@ -19,7 +19,7 @@ size_t len;
 full_queue_t fq;
 
 void aadl_eventdata_port_handler(void *data, size_t len) {
-    //printf("Receiver received data (%d) len %d\n", *(int*)data, len);
+    printf("Receiver received data (%d) len %d\n", *(int*)data, len);
 }
 
 
