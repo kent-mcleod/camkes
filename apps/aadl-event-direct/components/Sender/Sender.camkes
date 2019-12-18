@@ -10,11 +10,17 @@
  * @TAG(DATA61_BSD)
  */
 
+/*
+ * Copyright 2019 Adventium Labs.
+ * Modifications made to original.
+ */
 
 component Sender {
     include <counter.h>;
     control;
-    emits ReceiveEvent e;
-    dataport int_t counter;
+
+    // ep1_out - AADL Event Port (out) representation
+    emits SendEvent ep1_out_SendEvent;
+    dataport counter_t ep1_out_counter;
 }
 

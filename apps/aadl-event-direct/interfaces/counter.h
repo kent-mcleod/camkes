@@ -1,3 +1,5 @@
 #pragma once
 
-typedef int int_t;
+#include <stdint.h>
+
+typedef _Atomic uintmax_t counter_t;

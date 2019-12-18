@@ -10,35 +10,65 @@
  * @TAG(DATA61_BSD)
  */
 
+/*
+ * Copyright 2019 Adventium Labs.
+ * Modifications made to original.
+ */
+
 #include <camkes.h>
 #include <stdio.h>
 #include <string.h>
 #include <sel4/sel4.h>
+#include <stdlib.h>
+#include <counter.h>
 
-int aadl_raise_event(void) {
-    (*counter)++;
-    e_emit();
+//------------------------------------------------------------------------------
+// Implemention of AADL Output Event Port named "ep1_out"
+
+int ep1_out_aadl_send_event(void) {
+    // ep1_out_counter is a dataport (shared memory) that is written by the sender and read by the reciever(s).
+    // This counter is monotonicly increasing, but can wrap.
+    ++(*ep1_out_counter);
+    // Release memory fence - ensure subsequent write occurs after any preceeding read or write
+    ep1_out_counter_release();
+    ep1_out_SendEvent_emit();
     return 0;
 }
 
+//------------------------------------------------------------------------------
+// Testing
 
 int run(void) {
 
-    int i = 0;
+    counter_t i = 0;
     int err = 0;
 
     while (1) {
 
-        err = aadl_raise_event();
-	if (!err) {
-	    i++;
-	    if (i % 7 == 0) {
-	        //seL4_Yield();
-                printf("%s: rasied events %d\n", get_instance_name(), i);
-	    }
-	} else {
-            ZF_LOGE("Sender: failed to raise event %d", i);
+        // Busy loop to slow things down
+        for(unsigned int j = 0; j < 100000; ++j){
+            seL4_Yield();
+        }
+
+        // Send a random number of events
+        int n = (random() % 10);
+        for(unsigned int j = 0; j < n; ++j){
+            ++i;
+            printf("%s: sending event %" PRIuMAX "\n", get_instance_name(), i);
+            err = ep1_out_aadl_send_event();
+	    if (err) {
+                ZF_LOGE("%s: failed to raise event %" PRIuMAX ", exiting", get_instance_name(), i);
+                return err;
+            }
         }
     }
 }
+
+// Emacs Declarations
+// Local Variables:
+// mode: c
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// End:              
+
 

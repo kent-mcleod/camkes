@@ -20,14 +20,14 @@ assembly {
         component Receiver receiver;
         component Sender sender;
 
-	connection seL4Notification sre(from sender.e, to receiver.e);
-	connection seL4SharedData srcounter(from sender.counter, to receiver.counter);
+        // AADL Event Port connection representation from sender.ep1_out to reciever.ep1_in
+	connection seL4Notification epc1_event(from sender.ep1_out_SendEvent, to receiver.ep1_in_SendEvent);
+	connection seL4SharedData epc1_coutner(from sender.ep1_out_counter, to receiver.ep1_in_counter);
     }
     configuration {
 
-        sender.counter_access = "W";
-        receiver.counter_access = "R";
-
+        sender.ep1_out_counter_access = "W";
+        receiver.ep1_in_counter_access = "R";
 
         sender._priority = 50;
         receiver._priority = 50;

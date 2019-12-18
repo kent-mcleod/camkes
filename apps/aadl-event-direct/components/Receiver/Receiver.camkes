@@ -10,12 +10,18 @@
  * @TAG(DATA61_BSD)
  */
 
+/*
+ * Copyright 2019 Adventium Labs.
+ * Modifications made to original.
+ */
 
 component Receiver {
     //include "../../interfaces/counter.h";
     include <counter.h>;
     control;
-    consumes ReceiveEvent e;
-    dataport int_t counter;
+
+    // ep1_in - AADL Event Port (in) representation
+    consumes SendEvent ep1_in_SendEvent;
+    dataport counter_t ep1_in_counter;
 }
 
