@@ -31,6 +31,7 @@ int ep1_out_aadl_send_event(void) {
     ++(*ep1_out_counter);
     // Release memory fence - ensure subsequent write occurs after any preceeding read or write
     ep1_out_counter_release();
+    // NOTE: If we only need polling style recivers, we can get rid of the SendEvent
     ep1_out_SendEvent_emit();
     return 0;
 }

@@ -10,6 +10,11 @@
  * @TAG(DATA61_BSD)
  */
 
+/*
+ * Copyright 2019 Adventium Labs.
+ * Modifications made to original.
+ */
+
 import <std_connector.camkes>;
 
 import "components/Receiver/Receiver.camkes";

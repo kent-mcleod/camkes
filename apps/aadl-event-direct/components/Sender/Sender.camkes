@@ -20,6 +20,7 @@ component Sender {
     control;
 
     // ep1_out - AADL Event Port (out) representation
+    // NOTE: If we only need polling style receivers, we can get rid of the SendEvent
     emits SendEvent ep1_out_SendEvent;
     dataport counter_t ep1_out_counter;
 }

@@ -26,6 +26,8 @@
 //
 // Callback would typicaly be avoid for safety critical systems. It is harder
 // to analyze since the callback handler is run on some arbitrary thread.
+//
+// NOTE: If we only need polling style recivers, we can get rid of the SendEvent
 
 counter_t ep1_in_recv_counter = 0;
 
@@ -66,7 +68,7 @@ static void ep1_in_handler(void *v) {
 }
 
 //------------------------------------------------------------------------------
-// Testing
+// Testing - Three tests for the different styles: callback, wait and poll.
 
 int run_callback(void) {
     return ep1_in_SendEvent_reg_callback(&ep1_in_handler, NULL);
