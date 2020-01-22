@@ -73,7 +73,6 @@ void run_poll(void) {
     counter_t numDropped;
     data_t data;
 
-    recv_queue_init(&recvQueue, p1_in_queue);
     while (true) {
 
         // Busy loop to wait a bit and slow things down
@@ -100,7 +99,6 @@ void run_wait(void) {
     counter_t numDropped;
     data_t data;
 
-    recv_queue_init(&recvQueue, p1_in_queue);
     while (true) {
         p1_in_aadl_event_data_wait(&numDropped, &data);
         p1_in_aadl_event_data_receive(numDropped, &data);
@@ -115,8 +113,11 @@ void run_wait(void) {
 }
 
 int run_callback(void) {
-    recv_queue_init(&recvQueue, p1_in_queue);
-    return p1_in_SendEvent_reg_callback(&p1_in_handler, NULL);
+     return p1_in_SendEvent_reg_callback(&p1_in_handler, NULL);
+}
+
+void post_init(void) {
+   recv_queue_init(&recvQueue, p1_in_queue);
 }
 
 int run(void) {

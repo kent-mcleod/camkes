@@ -36,13 +36,15 @@ void p1_out_aadl_event_data_send(data_t *data) {
 //------------------------------------------------------------------------------
 // Testing
 
+void post_init(void) {
+    queue_init(p1_out_queue);
+}
+
 int run(void) {
 
     int i = 0;
     int err = 0;
     data_t data;
-
-    queue_init(p1_out_queue);
 
     while (1) {
 
