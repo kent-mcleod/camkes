@@ -116,6 +116,6 @@ void recv_queue_init(recv_queue_t *recvQueue, queue_t *queue);
 bool queue_dequeue(recv_queue_t *recvQueue, counter_t *numDropped, data_t *data);
 
 // Is queue empty? If the queue is not empty, it will stay that way until the
-// receiver dequeues all data. If the queue is not empty you can make no
+// receiver dequeues all data. If the queue is empty you can make no
 // assumptions about how long it will stay empty.
 bool queue_is_empty(recv_queue_t *recvQueue); 
