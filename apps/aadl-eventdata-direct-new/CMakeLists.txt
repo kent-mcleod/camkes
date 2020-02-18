@@ -17,6 +17,7 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(aadl-eventdata-direct C)
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/queue)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Receiver)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Sender)
 

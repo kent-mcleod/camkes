@@ -18,6 +18,6 @@ cmake_minimum_required(VERSION 3.7.2)
 project(ComponentSender C)
 
 DeclareCAmkESComponent(Sender
-    SOURCES src/sender.c src/queue.c
-    INCLUDES include
+    SOURCES src/sender.c
+    LIBS queue
 )
