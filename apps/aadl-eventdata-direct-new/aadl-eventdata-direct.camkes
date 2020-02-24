@@ -41,12 +41,12 @@ assembly {
     composition {
 
         // Scenario 1: Native sender and receiver
-        // component Receiver receiver;
-        // component Sender sender;
+        component Receiver receiver;
+        component Sender sender;
 
-        // // AADL Event Data Port connection representation from sender.p1_out to reciever.p1_in
-        // connection seL4Notification pc1_event(from sender.p1_out_SendEvent, to receiver.p1_in_SendEvent);
-        // connection seL4SharedData pc1_queue(from sender.p1_out_queue, to receiver.p1_in_queue);
+        // AADL Event Data Port connection representation from sender.p1_out to reciever.p1_in
+        connection seL4Notification pc1_event(from sender.p1_out_SendEvent, to receiver.p1_in_SendEvent);
+        connection seL4SharedData pc1_queue(from sender.p1_out_queue, to receiver.p1_in_queue);
 
 
         // Scenario 2: Nativer sender, VM receiver
@@ -76,19 +76,19 @@ assembly {
 
 
         // Scenario 4: VM Sender and VM receiver
-        VM_GENERAL_COMPOSITION_DEF()
+        // VM_GENERAL_COMPOSITION_DEF()
 
-        component VM vmReceiver;
-        VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        component VM vmSender;
-        VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
+        // component VM vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        // component VM vmSender;
+        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
+        // /* vm serial connections */
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
 
-        connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
-        connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
-        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+        // connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
+        // connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
+        // connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
+        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
     }
@@ -97,7 +97,7 @@ assembly {
         sender.p1_out_queue_access = "W";
         receiver.p1_in_queue_access = "R";
         sender._priority = 50;
-        sender._domain = 1;
+        sender._domain = 0;
         receiver._priority = 50;
         receiver._domain = 1;
         receiver.p1_in_SendEvent_domain = 1;
