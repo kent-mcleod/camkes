@@ -22,6 +22,17 @@
 #include <data.h>
 #include <queue.h>
 
+void done_emit_underlying(void) WEAK;
+static void done_emit(void) {
+  /* If the interface is not connected, the 'underlying' function will
+   * not exist.
+   */
+  if (done_emit_underlying) {
+    done_emit_underlying();
+  }
+}
+
+
 //------------------------------------------------------------------------------
 // Implementation of AADL Input Event Data Port (out) named "p1_out"
 //
@@ -31,6 +42,7 @@
 void p1_out_aadl_event_data_send(data_t *data) {
     queue_enqueue(p1_out_queue, data);
     p1_out_SendEvent_emit();
+    done_emit();
 }
 
 //------------------------------------------------------------------------------
