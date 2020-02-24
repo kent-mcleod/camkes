@@ -97,8 +97,10 @@ assembly {
         sender.p1_out_queue_access = "W";
         receiver.p1_in_queue_access = "R";
         sender._priority = 50;
+        sender._domain = 1;
         receiver._priority = 50;
-
+        receiver._domain = 1;
+        receiver.p1_in_SendEvent_domain = 1;
         vmReceiver.crossvm_dp_0 = "R";
         vmSender.crossvm_dp_0 = "W";
         VM_GENERAL_CONFIGURATION_DEF()
