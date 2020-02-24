@@ -50,28 +50,28 @@ assembly {
 
 
         // Scenario 2: Nativer sender, VM receiver
-        component Sender sender;
-        VM_GENERAL_COMPOSITION_DEF()
-        component VM vmReceiver;
-        VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
+        // component Sender sender;
+        // VM_GENERAL_COMPOSITION_DEF()
+        // component VM vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        // /* vm serial connections */
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
 
-        connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
-        connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
+        // connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
+        // connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
+        // connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
 
         // Scenario 3: VM Sender, Native receiver
-        // component Receiver receiver;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vmSender;
-        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
+        component Receiver receiver;
+        VM_GENERAL_COMPOSITION_DEF()
+        component VM vmSender;
+        VM_COMPONENT_CONNECTIONS_DEF(Sender)
+        /* vm serial connections */
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
 
-        // connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+        connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
+        connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
+        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
 
