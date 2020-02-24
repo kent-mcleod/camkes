@@ -52,43 +52,43 @@ assembly {
         // Scenario 2: Nativer sender, VM receiver
         // component Sender sender;
         // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vm1;
-        // VM_COMPONENT_CONNECTIONS_DEF(1)
+        // component VM vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
         // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(1)
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
 
-        // connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vm1.done);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vm1.crossvm_dp_0);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vm1.dtb_self, to vm1.dtb);
+        // connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
+        // connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
+        // connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
 
         // Scenario 3: VM Sender, Native receiver
         // component Receiver receiver;
         // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vm2;
-        // VM_COMPONENT_CONNECTIONS_DEF(2)
+        // component VM vmSender;
+        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
         // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(2)
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
 
-        // connection seL4Notification event_conn_1(from vm2.ready, to receiver.p1_in_SendEvent);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vm2.crossvm_dp_0,  to receiver.p1_in_queue);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vm2.dtb_self, to vm2.dtb);
+        // connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
+        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
+        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
 
         // Scenario 4: VM Sender and VM receiver
         VM_GENERAL_COMPOSITION_DEF()
 
-        component VM vm1;
-        VM_COMPONENT_CONNECTIONS_DEF(1)
-        component VM vm2;
-        VM_COMPONENT_CONNECTIONS_DEF(2)
+        component VM vmReceiver;
+        VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        component VM vmSender;
+        VM_COMPONENT_CONNECTIONS_DEF(Sender)
         /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(1,2)
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
 
-        connection seL4GlobalAsynch event_conn_1(from vm2.ready, to vm1.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_0(from vm2.crossvm_dp_0, to vm1.crossvm_dp_0);
-        connection seL4VMDTBPassthrough vm_dtb(from vm1.dtb_self, to vm1.dtb);
-        connection seL4VMDTBPassthrough vm_dtb1(from vm2.dtb_self, to vm2.dtb);
+        connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
+        connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
+        connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
+        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
     }
@@ -99,23 +99,23 @@ assembly {
         sender._priority = 50;
         receiver._priority = 50;
 
-        vm1.crossvm_dp_0 = "R";
-        vm2.crossvm_dp_0 = "W";
+        vmReceiver.crossvm_dp_0 = "R";
+        vmSender.crossvm_dp_0 = "W";
         VM_GENERAL_CONFIGURATION_DEF()
-        VM_CONFIGURATION_DEF(1)
-        VM_CONFIGURATION_DEF(2)
-        VM_VIRTUAL_SERIAL_CONFIGURATION_DEF(1,2)
+        VM_CONFIGURATION_DEF(Receiver)
+        VM_CONFIGURATION_DEF(Sender)
+        VM_VIRTUAL_SERIAL_CONFIGURATION_DEF(Receiver,Sender)
 
-        vm1.cnode_size_bits = 18;
-        vm1.simple_untyped21_pool = 12;
-        vm1.simple_untyped12_pool = 12;
-        vm1.num_extra_frame_caps = 0;
-        vm1.extra_frame_map_address = 0;
-        vm2.cnode_size_bits = 18;
-        vm2.simple_untyped21_pool = 12;
-        vm2.simple_untyped12_pool = 12;
-        vm2.num_extra_frame_caps = 0;
-        vm2.extra_frame_map_address = 0;
+        vmReceiver.cnode_size_bits = 18;
+        vmReceiver.simple_untyped21_pool = 12;
+        vmReceiver.simple_untyped12_pool = 12;
+        vmReceiver.num_extra_frame_caps = 0;
+        vmReceiver.extra_frame_map_address = 0;
+        vmSender.cnode_size_bits = 18;
+        vmSender.simple_untyped21_pool = 12;
+        vmSender.simple_untyped12_pool = 12;
+        vmSender.num_extra_frame_caps = 0;
+        vmSender.extra_frame_map_address = 0;
 
     }
 }

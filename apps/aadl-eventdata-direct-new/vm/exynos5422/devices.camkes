@@ -30,7 +30,7 @@ assembly {
 	composition {}
 	configuration {
 
-        vm1.linux_address_config = {
+        vmReceiver.linux_address_config = {
             "linux_ram_base" : VAR_STRINGIZE(VM1_RAM_BASE),
             "linux_ram_paddr_base" : VAR_STRINGIZE(VM1_RAM_BASE),
             "linux_ram_size" : VAR_STRINGIZE(VM1_RAM_SIZE),
@@ -39,23 +39,23 @@ assembly {
             "initrd_max_size" : VAR_STRINGIZE(VM_INITRD_MAX_SIZE),
             "initrd_addr" : VAR_STRINGIZE(VM1_INITRD_ADDR),
         };
-        vm1.linux_image_config = {
+        vmReceiver.linux_image_config = {
             "linux_bootcmdline" : "console=hvc0 root=/dev/ram0 nosmp rw debug loglevel=8 pci=nomsi initcall_blacklist=clk_disable_unused",
             "linux_stdout" : "hvc0",
             "dtb_name" : "",
             "initrd_name" : "linux-initrd-vm-client",
         };
-        vm1.mmios = [
+        vmReceiver.mmios = [
                     "0x10000000:0x1000:12", // CHIP ID
                     "0x10486000:0x1000:12"  // VCPU
         ];
-        vm1.untyped_mmios = [
+        vmReceiver.untyped_mmios = [
                     "0x48000000:27"  //RAM
         ];
-        vm1.irqs =  [];
-        vm1.dtb = dtb([{}]);
+        vmReceiver.irqs =  [];
+        vmReceiver.dtb = dtb([{}]);
 
-        vm2.linux_address_config = {
+        vmSender.linux_address_config = {
             "linux_ram_base" : VAR_STRINGIZE(VM2_RAM_BASE),
             "linux_ram_paddr_base" : VAR_STRINGIZE(VM2_RAM_BASE),
             "linux_ram_size" : VAR_STRINGIZE(VM2_RAM_SIZE),
@@ -64,21 +64,21 @@ assembly {
             "initrd_max_size" : VAR_STRINGIZE(VM_INITRD_MAX_SIZE),
             "initrd_addr" : VAR_STRINGIZE(VM2_INITRD_ADDR),
         };
-        vm2.linux_image_config = {
+        vmSender.linux_image_config = {
             "linux_bootcmdline" : "console=hvc0 root=/dev/ram0 nosmp rw debug loglevel=8 pci=nomsi initcall_blacklist=clk_disable_unused",
             "linux_stdout" : "hvc0",
             "dtb_name" : "",
             "initrd_name" : "linux-initrd-vm-client",
         };
-        vm2.mmios = [
+        vmSender.mmios = [
                     "0x10000000:0x1000:12", // CHIP ID
                     "0x10486000:0x1000:12"  // VCPU
         ];
-        vm2.untyped_mmios = [
+        vmSender.untyped_mmios = [
                     "0x50000000:27"  //RAM
         ];
-        vm2.irqs =  [];
-        vm2.dtb = dtb([{}]);
+        vmSender.irqs =  [];
+        vmSender.dtb = dtb([{}]);
 
     }
 }
