@@ -28,3 +28,22 @@ set(KernelArmVtimerUpdateVOffset OFF CACHE BOOL "" FORCE)
 set(KernelArmDisableWFIWFETraps ON CACHE BOOL "" FORCE)
 set(KernelNumDomains 2 CACHE STRING "" FORCE)
 set(KernelDomainSchedule "${CMAKE_CURRENT_LIST_DIR}/vm/domain_schedule.c" CACHE INTERNAL "")
+if("${PLATFORM}" STREQUAL "qemu-arm-virt")
+    set(KernelArmCPU cortex-a53 CACHE STRING "" FORCE)
+    set(KernelArmExportPCNTUser ON CACHE BOOL "" FORCE)
+    set(KernelArmExportPTMRUser ON CACHE BOOL "" FORCE)
+
+	set(MIN_QEMU_VERSION "4.0.0")
+    execute_process(COMMAND ${QEMU_BINARY} -version OUTPUT_VARIABLE QEMU_VERSION_STR)
+    string(
+        REGEX
+            MATCH
+            "[0-9](\\.[0-9])+"
+            QEMU_VERSION
+            ${QEMU_VERSION_STR}
+    )
+    if("${QEMU_VERSION}" VERSION_LESS "${MIN_QEMU_VERSION}")
+        message(WARNING "Warning: qemu version should be at least ${MIN_QEMU_VERSION}")
+    endif()
+
+endif()
