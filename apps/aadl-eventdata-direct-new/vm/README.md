@@ -282,14 +282,45 @@ Receiver: received: 4  numDropped: 0
 
 ## Checkout the sources
 
+### From a different project manifest
 ```
 repo init -u https://github.com/SEL4PROJ/camkes-arm-vm-manifest.git --depth=1
 repo sync -j8
 (cd projects && git clone https://github.com/kent-mcleod/camkes.git -b kent/aadl)
 ln -sf projects/camkes/easy-settings.cmake
+```
+
+### From the manifest in this project
+
+```
+repo init -u https://github.com/kent-mcleod/camkes.git -b kent/aadl --depth=1
+repo sync -j8
+```
+
+## Configuring for odroid-xu4
+
+```
 mkdir build
 cd build
 ../init-build.sh -DPLATFORM=exynos5422 -DCAMKES_APP=aadl-eventdata-direct-new -DARM_HYP=ON -DARM=ON
 ninja
+```
+
+## Configuring for qemu-arm-virt
+
+You need to have a version of qemu-system-aarch64 version 4.0.0 or greater.
+
+It is posible to specify a version of qemu via `-DQEMU_BINARY`. Otherwise whatever qemu-system-aarch64 is in the path will be used.
 
 ```
+mkdir build
+cd build
+../init-build.sh -DPLATFORM=qemu-arm-virt -DARM_HYP=ON -DQEMU_BINARY=/tmp/tmp.8nVqEXa2QZ/qemu/aarch64-softmmu/qemu-system-aarch64 -DCAMKES_APP=aadl-eventdata-direct-new
+ninja
+```
+
+Running:
+```
+qemu-system-aarch64 -machine virt,virtualization=on,highmem=off,secure=off -cpu cortex-a53 -nographic  -m size=1024  -kernel images/capdl-loader-image-arm-qemu-arm-virt
+```
+
