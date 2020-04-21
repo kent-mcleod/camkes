@@ -22,16 +22,7 @@
 #include <data.h>
 #include <queue.h>
 
-void done_emit_underlying(void) WEAK;
-static void done_emit(void) {
-  /* If the interface is not connected, the 'underlying' function will
-   * not exist.
-   */
-  if (done_emit_underlying) {
-    done_emit_underlying();
-  }
-}
-
+void sender_event_recv_emit_underlying(void);
 
 //------------------------------------------------------------------------------
 // Implementation of AADL Input Event Data Port (out) named "p1_out"
@@ -41,8 +32,7 @@ static void done_emit(void) {
 // Assumption: only one thread is calling this and/or reading p1_in_recv_counter.
 void p1_out_aadl_event_data_send(data_t *data) {
     queue_enqueue(p1_out_queue, data);
-    p1_out_SendEvent_emit();
-    done_emit();
+    sender_event_recv_emit_underlying();
 }
 
 //------------------------------------------------------------------------------
@@ -71,7 +61,7 @@ int run(void) {
             ++i;
             // Stage data
             data.x = i;
-            printf("%s: sending: %d\n", get_instance_name(), data.x);
+            // printf("%s: sending: %d\n", get_instance_name(), data.x);
             // Send the data
             p1_out_aadl_event_data_send(&data);          
         }

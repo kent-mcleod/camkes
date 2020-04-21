@@ -24,56 +24,64 @@ import <TimeServer/TimeServer.camkes>;
 import <vm-connectors.camkes>;
 import <devices.camkes>;
 
-import "components/Receiver/Receiver.camkes";
-import "components/Sender/Sender.camkes";
 
+component Receiver {
+    include <queue.h>;
+    control;
+
+    // p1_in - AADL Event Data Port (in) representation
+    // NOTE: If we only need polling style receivers, we can get rid of the SendEvent
+    consumes SendEvent p1_in_SendEvent;
+    dataport queue_t p1_in_queue;
+}
+
+component Sender {
+    include <queue.h>;
+    control;
+
+    // p1_out - AADL Event Data Port (out) representation
+    // NOTE: If we only need polling style receivers, we can get rid of the SendEvent
+    emits SendEvent p1_out_SendEvent;
+    dataport queue_t p1_out_queue;
+}
 
 component VM {
     VM_INIT_DEF()
     include <queue.h>;
-    dataport queue_t crossvm_dp_0;
+
+
+    // Interfaces used by the vmHub component
+    maybe dataport queue_t sender_dataport;
+    maybe consumes SendEvent sender_event_recv;
+
+    maybe dataport queue_t vmSender_dataport;
+    maybe consumes SendEvent vmSender_event_recv;
+
+
+    maybe dataport queue_t receiver_dataport;
+    emits SendEvent receiver_event_send;
+
+    maybe dataport queue_t vmReceiver_dataport;
+    emits SendEvent vmReceiver_event_send;
+
+
+    // Interfaces used by the vmSender and vmReceiver component
+    maybe dataport queue_t crossvm_dp_0;
     emits SendEvent ready;
     maybe consumes SendEvent done;
+
 }
 
 
+/*
+
+  sender -> vmHub
+  vmSender -> vmHub
+  vmHub -> receiver
+  vmHub -> vmReceiver
+ */
 assembly {
     composition {
-
-        // Scenario 1: Native sender and receiver
-        // component Receiver receiver;
-        // component Sender sender;
-
-        // // AADL Event Data Port connection representation from sender.p1_out to reciever.p1_in
-        // connection seL4Notification pc1_event(from sender.p1_out_SendEvent, to receiver.p1_in_SendEvent);
-        // connection seL4SharedData pc1_queue(from sender.p1_out_queue, to receiver.p1_in_queue);
-
-
-        // Scenario 2: Nativer sender, VM receiver
-        // component Sender sender;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vmReceiver;
-        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
-
-        // connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
-
-        // Scenario 3: VM Sender, Native receiver
-        // component Receiver receiver;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vmSender;
-        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
-
-        // connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
-
-
 
         // Scenario 4: VM Sender and VM receiver
         VM_GENERAL_COMPOSITION_DEF()
@@ -82,13 +90,34 @@ assembly {
         VM_COMPONENT_CONNECTIONS_DEF(Receiver)
         component VM vmSender;
         VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
 
-        connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
+        component VM vmHub;
+        VM_COMPONENT_CONNECTIONS_DEF(Hub)
+
+        /* vm serial connections */
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender,Hub)
+
+
+        component Receiver receiver;
+        component Sender sender;
+
+
+        connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmHub.sender_event_recv);
+        connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmHub.sender_dataport);
+
+        connection seL4GlobalAsynch event_conn_2(from vmSender.ready, to vmHub.vmSender_event_recv);
+        connection seL4SharedDataWithCaps cross_vm_conn_2(from vmSender.crossvm_dp_0, to vmHub.vmSender_dataport);
+
+        connection seL4Notification event_conn_3(from vmHub.receiver_event_send, to receiver.p1_in_SendEvent);
+        connection seL4SharedDataWithCaps cross_vm_conn_3(from vmHub.receiver_dataport,  to receiver.p1_in_queue);
+
+        connection seL4GlobalAsynch event_conn_4(from vmHub.vmReceiver_event_send, to vmReceiver.done);
+        connection seL4SharedDataWithCaps cross_vm_conn_4(from vmHub.vmReceiver_dataport, to vmReceiver.crossvm_dp_0);
+
+
         connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
         connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+        connection seL4VMDTBPassthrough vm_dtb2(from vmHub.dtb_self, to vmHub.dtb);
 
 
     }
@@ -99,14 +128,22 @@ assembly {
         sender._priority = 50;
         sender._domain = 1;
         receiver._priority = 50;
-        receiver._domain = 1;
-        receiver.p1_in_SendEvent_domain = 1;
+        receiver._domain = 2;
+        receiver.p1_in_SendEvent_domain = 2;
+
         vmReceiver.crossvm_dp_0 = "R";
         vmSender.crossvm_dp_0 = "W";
+
+        vmHub.sender_dataport = "R";
+        vmHub.vmSender_dataport = "R";
+        vmHub.receiver_dataport = "W";
+        vmHub.vmReceiver_dataport = "W";
+
         VM_GENERAL_CONFIGURATION_DEF()
         VM_CONFIGURATION_DEF(Receiver)
         VM_CONFIGURATION_DEF(Sender)
-        VM_VIRTUAL_SERIAL_CONFIGURATION_DEF(Receiver,Sender)
+        VM_CONFIGURATION_DEF(Hub)
+        VM_VIRTUAL_SERIAL_CONFIGURATION_DEF(Receiver,Sender,Hub)
 
         vmReceiver.cnode_size_bits = 18;
         vmReceiver.simple_untyped21_pool = 12;
@@ -118,6 +155,11 @@ assembly {
         vmSender.simple_untyped12_pool = 12;
         vmSender.num_extra_frame_caps = 0;
         vmSender.extra_frame_map_address = 0;
+        vmHub.cnode_size_bits = 18;
+        vmHub.simple_untyped21_pool = 12;
+        vmHub.simple_untyped12_pool = 12;
+        vmHub.num_extra_frame_caps = 0;
+        vmHub.extra_frame_map_address = 0;
 
     }
 }

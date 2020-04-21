@@ -27,15 +27,35 @@
 
 // The following device definitions correspond to the following camkes interfaces.
 
-// maybe dataport queue_t crossvm_dp_0;
-// maybe consumes SendEvent done;
+// dataport queue_t sender_dataport;
+// consumes SendEvent sender_event_recv;
 
-#define NUM_CONNECTIONS 1
+// dataport queue_t vmSender_dataport;
+// consumes SendEvent vmSender_event_recv;
+
+
+// dataport queue_t receiver_dataport;
+// emits SendEvent receiver_event_send;
+
+// dataport queue_t vmReceiver_dataport;
+// emits SendEvent vmReceiver_event_send;
+
+#define NUM_CONNECTIONS 4
 static struct camkes_crossvm_connection connections[NUM_CONNECTIONS];
 
 // these are defined in the dataport's glue code
-extern dataport_caps_handle_t crossvm_dp_0_handle;
-seL4_Word done_notification_badge(void);
+extern dataport_caps_handle_t sender_dataport_handle;
+seL4_Word sender_event_recv_notification_badge(void);
+
+extern dataport_caps_handle_t vmSender_dataport_handle;
+seL4_Word vmSender_event_recv_notification_badge(void);
+
+extern dataport_caps_handle_t receiver_dataport_handle;
+void receiver_event_send_emit_underlying(void); 
+
+extern dataport_caps_handle_t vmReceiver_dataport_handle;
+void done_emit_underlying(void);
+
 
 static int consume_callback(vm_t *vm, void *cookie)
 {
@@ -47,9 +67,29 @@ static int consume_callback(vm_t *vm, void *cookie)
 void init_cross_vm_connections(vm_t *vm, void *cookie)
 {
     connections[0] = (struct camkes_crossvm_connection) {
-        .handle = &crossvm_dp_0_handle,
+        .handle = &sender_dataport_handle,
         .emit_fn = NULL,
-        .consume_badge = done_notification_badge()
+        .consume_badge = sender_event_recv_notification_badge()
+    };
+
+
+    connections[1] = (struct camkes_crossvm_connection) {
+        .handle = &vmSender_dataport_handle,
+        .emit_fn = NULL,
+        .consume_badge = vmSender_event_recv_notification_badge()
+    };
+
+
+    connections[2] = (struct camkes_crossvm_connection) {
+        .handle = &receiver_dataport_handle,
+        .emit_fn = receiver_event_send_emit_underlying,
+        .consume_badge = -1
+    };
+
+    connections[3] = (struct camkes_crossvm_connection) {
+        .handle = &vmReceiver_dataport_handle,
+        .emit_fn = done_emit_underlying,
+        .consume_badge = -1
     };
 
     for (int i = 0; i < NUM_CONNECTIONS; i++) {
@@ -57,8 +97,9 @@ void init_cross_vm_connections(vm_t *vm, void *cookie)
             int err = register_async_event_handler(connections[i].consume_badge, consume_callback, (void *)connections[i].consume_badge);
             ZF_LOGF_IF(err, "Failed to register_async_event_handler for init_cross_vm_connections.");
 
-        }
+        }   
     }
+
 
     cross_vm_connections_init(vm, CONNECTION_BASE_ADDRESS, connections, ARRAY_SIZE(connections));
 }

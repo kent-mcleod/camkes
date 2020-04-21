@@ -23,7 +23,7 @@
 
 /* Default schedule. */
 const dschedule_t ksDomSchedule[] = {
-    { .domain = 0, .length = 1 },
+    { .domain = 0, .length = 3 },
 #if CONFIG_NUM_DOMAINS > 1
     { .domain = 1, .length = 1 },
 #endif
