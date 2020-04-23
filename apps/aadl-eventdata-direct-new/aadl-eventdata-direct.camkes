@@ -62,33 +62,33 @@ assembly {
         // connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
 
         // Scenario 3: VM Sender, Native receiver
-        // component Receiver receiver;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VM vmSender;
-        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
+        component Receiver receiver;
+        VM_GENERAL_COMPOSITION_DEF()
+        component VM vmSender;
+        VM_COMPONENT_CONNECTIONS_DEF(Sender)
+        /* vm serial connections */
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
 
-        // connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+        connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
+        connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
+        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
 
         // Scenario 4: VM Sender and VM receiver
-        VM_GENERAL_COMPOSITION_DEF()
+        // VM_GENERAL_COMPOSITION_DEF()
 
-        component VM vmReceiver;
-        VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        component VM vmSender;
-        VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
+        // component VM vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        // component VM vmSender;
+        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
+        // /* vm serial connections */
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
 
-        connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
-        connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
-        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+        // connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
+        // connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
+        // connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
+        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
 
 
     }
@@ -96,10 +96,10 @@ assembly {
 
         sender.p1_out_queue_access = "W";
         receiver.p1_in_queue_access = "R";
-        sender._priority = 50;
-        sender._domain = 1;
+        // sender._priority = 50;
+        // sender._domain = 1;
         receiver._priority = 50;
-        receiver._domain = 1;
+        receiver._domain = 0;
         receiver.p1_in_SendEvent_domain = 1;
         vmReceiver.crossvm_dp_0 = "R";
         vmSender.crossvm_dp_0 = "W";
@@ -118,6 +118,13 @@ assembly {
         vmSender.simple_untyped12_pool = 12;
         vmSender.num_extra_frame_caps = 0;
         vmSender.extra_frame_map_address = 0;
+
+        vmSender._domain = 1;
+        vmSender.tcb_pool = 2;
+        vmSender.tcb_pool_domains = [1, 1];
+
+        fserv._domain = 1;
+        fserv.fs_ctrl_domain = 1;
 
     }
 }
