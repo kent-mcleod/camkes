@@ -118,6 +118,7 @@ assembly {
         vmSender.simple_untyped12_pool = 12;
         vmSender.num_extra_frame_caps = 0;
         vmSender.extra_frame_map_address = 0;
+        cross_vm_conn_0.size = 8192;
 
     }
 }
