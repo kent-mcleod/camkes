@@ -28,12 +28,19 @@ import "components/Receiver/Receiver.camkes";
 import "components/Sender/Sender.camkes";
 
 
-component VM {
+component VMSender {
     VM_INIT_DEF()
     include <queue.h>;
     dataport queue_t crossvm_dp_0;
     emits SendEvent ready;
-    maybe consumes SendEvent done;
+}
+
+
+component VMReceiver {
+    VM_INIT_DEF()
+    include <queue.h>;
+    dataport queue_t crossvm_dp_0;
+    consumes SendEvent done;
 }
 
 
@@ -78,9 +85,9 @@ assembly {
         // Scenario 4: VM Sender and VM receiver
         VM_GENERAL_COMPOSITION_DEF()
 
-        component VM vmReceiver;
+        component VMReceiver vmReceiver;
         VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        component VM vmSender;
+        component VMSender vmSender;
         VM_COMPONENT_CONNECTIONS_DEF(Sender)
         /* vm serial connections */
         VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
