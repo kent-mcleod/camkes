@@ -1,42 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-     Copyright 2020, Data61
-     Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-     ABN 41 687 119 230.
-
-     This software may be distributed and modified according to the terms of
-     the BSD 2-Clause license. Note that NO WARRANTY is provided.
-     See "LICENSE_BSD2.txt" for details.
-
-     @TAG(DATA61_BSD)
--->
 <manifest>
+  <remote fetch="https://github.com/kent-mcleod/" name="camkes"/>
   <remote fetch="../seL4" name="seL4"/>
   <remote fetch="../sel4proj" name="sel4proj"/>
-  <remote fetch="https://github.com/kent-mcleod/" name="camkes"/>
+  
   <default remote="seL4" revision="master"/>
   
-  <project name="camkes-arm-vm.git" path="projects/vm" remote="sel4proj" revision="d5aec4d3f19f4d79e9ef0471c0d6e3b18aeb852a" upstream="master"/>
-  <project name="camkes.git" path="projects/camkes" remote="camkes" revision="0095122e72c1a54a6913c41a8bd352310e26ec5e" upstream="kent/aadl">     
-   <linkfile dest="easy-settings.cmake" src="easy-settings.cmake"/>
-  </project>
-  <project name="camkes-tool.git" path="projects/camkes-tool" revision="403fd9e4afd8981422ddb1fa5c0d40f831c7c88e" upstream="master">
+  <project name="camkes-arm-vm.git" path="projects/vm" remote="sel4proj" revision="e952a37fdb5a92ca452512b3af0aea4186b749f5" upstream="master"/>
+  <project name="camkes-tool.git" path="projects/camkes-tool" revision="0fd0780ffd5034cffd87346b24b1a50037be3720" upstream="master">
     <linkfile dest="camkes_README.md" src="docs/index.md"/>
   </project>
   <project name="camkes-vm-images.git" path="projects/camkes-vm-images" remote="sel4proj" revision="fd236575387617ff8c830c9da0c9379e96ca0a29" upstream="master"/>
   <project name="camkes-vm-linux.git" path="projects/camkes-vm-linux" remote="sel4proj" revision="92274fb4909343bdf242383b5ffa19fe2cf1caa7" upstream="master"/>
   <project name="camkes-vm.git" path="projects/camkes-vm" revision="49f74a093703927bccc4c1c2bd6c0e2583f4f664" upstream="master"/>
-  <project name="capdl.git" path="projects/capdl" revision="a66a1b307bebe3399787287cc0b0d437926f89a0" upstream="master"/>
-  <project name="global-components.git" path="projects/global-components" remote="sel4proj" revision="a764892aa85c676b5d40464108273cae0dcba69a" upstream="master"/>
+  <project name="camkes.git" path="projects/camkes" remote="camkes" revision="cd96772ff23c653c3695030e4a1793ce6d25c69f" upstream="kent/aadl">
+    <linkfile dest="easy-settings.cmake" src="easy-settings.cmake"/>
+  </project>
+  <project name="capdl.git" path="projects/capdl" revision="13a1983e8a1b9c0307b5163288c2e1969d44a373" upstream="master"/>
+  <project name="global-components.git" path="projects/global-components" remote="sel4proj" revision="c3c755a6dccc05ef9a1ad7079bbb1da36a95831c" upstream="master"/>
   <project name="musllibc.git" path="projects/musllibc" revision="8a4bddbf499a1c9ff8a064d360dd715ef99ffcab" upstream="sel4"/>
-  <project name="projects_libs.git" path="projects/projects_libs" remote="sel4proj" revision="5fa79f91fab96b17a9b753cca568a3c5969e85a7" upstream="master"/>
-  <project name="seL4.git" path="kernel" revision="200cd2cbed272ed6c0dd9cc775b5c9598be3ac34" upstream="master"/>
+  <project name="projects_libs.git" path="projects/projects_libs" remote="sel4proj" revision="cfbfec4d8730607d28e9fc662744a4a61a3e35dd" upstream="master"/>
+  <project name="seL4.git" path="kernel" revision="d5d54a0d5596e7a708a55040b58a1bb286dc9545" upstream="master"/>
   <project name="seL4_libs.git" path="projects/seL4_libs" revision="1f177036a60d8b473a9c3ffc3858a62e73c2e224" upstream="master"/>
-  <project name="seL4_projects_libs.git" path="projects/seL4_projects_libs" remote="sel4proj" revision="85822cfce9f883c756100189c6fe9b0b551a692a" upstream="master"/>
+  <project name="seL4_projects_libs.git" path="projects/seL4_projects_libs" remote="sel4proj" revision="d69f819e8aac4ebc5669027d1fefbe01ddfc3d27" upstream="master"/>
   <project name="seL4_tools.git" path="tools/seL4" revision="a5de0e555b25655a798bdcdecee154202242da11" upstream="master">
     <linkfile dest="griddle" src="cmake-tool/griddle"/>
     <linkfile dest="init-build.sh" src="cmake-tool/init-build.sh"/>
   </project>
   <project name="sel4runtime.git" path="projects/sel4runtime" remote="sel4proj" revision="8fddd5e8c1d76ee51b6c0d502e666ee431be32c6" upstream="master"/>
-  <project name="util_libs.git" path="projects/util_libs" revision="6250ac9ca2eadb1cf7d785802e92f17263415e48" upstream="master"/>
+  <project name="util_libs.git" path="projects/util_libs" revision="731c49101fac8ce5281001aa3e90883e7ca09bd9" upstream="master"/>
 </manifest>
