@@ -25,16 +25,16 @@
 const dschedule_t ksDomSchedule[] = {
     { .domain = 0, .length = 1 },
 #if CONFIG_NUM_DOMAINS > 1
-    { .domain = 1, .length = 1 },
+    { .domain = 1, .length = 5 },
 #endif
 #if CONFIG_NUM_DOMAINS > 2
-    { .domain = 2, .length = 1 },
+    { .domain = 2, .length = 5 },
 #endif
 #if CONFIG_NUM_DOMAINS > 3
-    { .domain = 3, .length = 1 },
+    { .domain = 3, .length = 2 },
 #endif
 #if CONFIG_NUM_DOMAINS > 4
-    { .domain = 4, .length = 1 },
+    { .domain = 4, .length = 2 },
 #endif
 #if CONFIG_NUM_DOMAINS > 5
     { .domain = 5, .length = 1 },

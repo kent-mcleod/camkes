@@ -114,6 +114,9 @@ assembly {
         VM_CONFIGURATION_DEF(Receiver)
         VM_CONFIGURATION_DEF(Sender)
         VM_VIRTUAL_SERIAL_CONFIGURATION_DEF(Receiver,Sender)
+        VM_DOMAIN_CONFIGURATION_DEF(Sender, 1)
+        VM_DOMAIN_CONFIGURATION_DEF(Receiver, 2)
+
 
         vmReceiver.cnode_size_bits = 18;
         vmReceiver.simple_untyped21_pool = 12;
