@@ -16,86 +16,9 @@ include(${CAMKES_VM_LINUX_SOURCE_HELPERS_PATH})
 include(ExternalProject)
 include(external-project-helpers)
 
+# User pre-configured rootfs file with crossvm modules and apps installed
+set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs_crossvm.cpio.gz")
 
-if("${KernelARMPlatform}" STREQUAL "qemu-arm-virt")
-    set(cpp_flags "-DKERNELARMPLATFORM_QEMU-ARM-VIRT")
-    set(linux_repo "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git")
-    set(linux_tag "v4.9.189")
-    set(linux_arch "arm64")
-    set(linux_cross_compile "aarch64-linux-gnu-")
-    set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs.cpio.gz")
-    # Checkout and configure linux to build crossvm module
-    ExternalProject_Add(
-        checkout_linux
-        GIT_REPOSITORY
-        ${linux_repo}
-        GIT_TAG
-        ${linux_tag}
-        GIT_SHALLOW
-        1
-        GIT_PROGRESS
-        1
-        BUILD_COMMAND
-        ""
-        INSTALL_COMMAND
-        ""
-        CONFIGURE_COMMAND
-        ""
-        SOURCE_DIR
-        ${CMAKE_CURRENT_BINARY_DIR}/linux_out
-    )
-    # Linux config and symvers are to be copied to unpacked archive
-    set(linux_config "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux_configs/config")
-    set(linux_symvers "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/linux_configs/Module.symvers")
-    # Configure unpacked archive with config and symvers
-    ConfigureLinux(
-        ${CMAKE_CURRENT_BINARY_DIR}/linux_out
-        ${linux_config}
-        ${linux_symvers}
-        configure_vm_linux
-        ARCH
-        ${linux_arch}
-        CROSS_COMPILE
-        ${linux_cross_compile}
-        DEPENDS
-        checkout_linux
-    )
-
-    # Compile CrossVM Dataport Module
-    DefineLinuxModule(
-        ${CAMKES_VM_LINUX_DIR}/camkes-linux-artifacts/camkes-linux-modules/camkes-connector-modules/connection
-        output_module
-        output_module_target
-        KERNEL_DIR
-        ${CMAKE_CURRENT_BINARY_DIR}/linux_out
-        ARCH
-        ${linux_arch}
-        CROSS_COMPILE
-        ${linux_cross_compile}
-        DEPENDS
-        checkout_linux
-        configure_vm_linux
-    )
-    AddFileToOverlayDir(
-        "connection.ko"
-        ${output_module}
-        "lib/modules/4.14.87/kernel/drivers/vmm"
-        overlay
-        DEPENDS
-        output_module_target
-    )
-
-    # Add script to initialise dataport module
-    AddFileToOverlayDir(
-        "S90crossvm_module_init"
-        ${CMAKE_CURRENT_SOURCE_DIR}/overlay_files/init_scripts/cross_vm_module_init
-        "etc/init.d"
-        overlay
-    )
-else()
-    # User pre-configured rootfs file with crossvm modules and apps installed
-    set(rootfs_file "${CAMKES_VM_IMAGES_DIR}/${KernelARMPlatform}/rootfs_crossvm.cpio.gz")
-endif()
 # Complile CrossVM Event Apps receiver and sender
 foreach(item IN ITEMS receiver sender)
     ExternalProject_Add(
