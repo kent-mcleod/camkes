@@ -21,25 +21,25 @@ there are domain configuration changes as well as camkes `composition` changes f
 some scenarios:
 
 ```
-commit 34d048447ce858d6283542636888f6fbf3f07ed7
+commit 4f1d547a30165ef5521e0e19d7d54f1fade5cfce
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
 Date:   Mon Feb 24 17:25:11 2020 +1100
 
     scenario 4
 
-commit a41a9707c12c4e00886f05bcb97d146d14b1ee0d
+commit dc730fd33861ab7134f444bd59f6f06edef69e3b
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
 Date:   Mon Feb 24 17:23:43 2020 +1100
 
     scenario 3
 
-commit 4958412c88ab717aa0a37d4ca3bb4b76d3207a62
+commit b64c4e9afc658f3aa86b627547b7b2757728192a
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
 Date:   Mon Feb 24 17:23:24 2020 +1100
 
     Scenario 2
 
-commit 949bd36a1ee9dda447b148df68ad88be78646d0a
+commit fb24fdf4b9ce52ae1e44df872b611b0d55ed2fdf
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
 Date:   Mon Feb 24 17:22:33 2020 +1100
 
