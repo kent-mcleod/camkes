@@ -90,7 +90,7 @@ assembly {
         component VMSender vmSender;
         VM_COMPONENT_CONNECTIONS_DEF(Sender)
         /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
 
         connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
         connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);

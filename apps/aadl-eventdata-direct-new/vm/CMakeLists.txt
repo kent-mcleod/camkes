@@ -77,5 +77,9 @@ CAmkESAddImportPath(${CMAKE_CURRENT_SOURCE_DIR}/${KernelARMPlatform}/)
 DeclareCAmkESARMVM(VMReceiver EXTRA_SOURCES src/cross_vm_connections_receiver.c EXTRA_LIBS queue)
 DeclareCAmkESARMVM(VMSender EXTRA_SOURCES src/cross_vm_connections_sender.c EXTRA_LIBS queue)
 
+
+DeclareCAmkESARMVM(VMReceiver EXTRA_SOURCES ${ARM_VM_PROJECT_DIR}/components/VM/src/modules/virtio_con.c EXTRA_LIBS virtio)
+
+
 CAmkESAddCPPInclude(${CAMKES_ARM_VM_DIR}/components/VM)
 

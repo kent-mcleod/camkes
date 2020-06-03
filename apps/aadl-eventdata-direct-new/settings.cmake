@@ -21,7 +21,7 @@ set(LibUSB OFF CACHE BOOL "" FORCE)
 # Enables the option for the VM to open and load a seperate initrd file
 set(VmInitRdFile ON CACHE BOOL "" FORCE)
 # Enable virtio console vmm module
-set(VmVirtioConsole ON CACHE BOOL "" FORCE)
+set(VmVirtioConsole OFF CACHE BOOL "" FORCE)
 # Make VTimers see absolute time rather than virtual time.
 set(KernelArmVtimerUpdateVOffset OFF CACHE BOOL "" FORCE)
 # Don't trap WFI or WFE instructions in a VM.
