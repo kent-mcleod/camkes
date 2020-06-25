@@ -17,6 +17,19 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(aadl-eventdata-direct C)
 
+CAmkESAddTemplatesPath(templates)
+
+DeclareCAmkESConnector(
+    CASE_AADL_EventDataport
+    FROM
+    CASE_AADL_EventDataport-from.template.c
+    FROM_LIBS queue
+    TO
+    CASE_AADL_EventDataport-to.template.c
+    TO_LIBS queue
+)
+
+
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/queue)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Receiver)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/Sender)

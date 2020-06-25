@@ -27,6 +27,11 @@ import <devices.camkes>;
 import "components/Receiver/Receiver.camkes";
 import "components/Sender/Sender.camkes";
 
+connector CASE_AADL_EventDataport {
+    from Dataport with 0 threads;
+    to Dataports;
+    attribute bool to_global_endpoint = True;
+}
 
 component VMSender {
     VM_INIT_DEF()
