@@ -36,85 +36,65 @@ connector CASE_AADL_EventDataport {
 component VMSender {
     VM_INIT_DEF()
     include <queue.h>;
-    dataport queue_t crossvm_dp_0;
-    emits SendEvent ready;
+    dataport queue_t crossvm_sender;
 }
 
 
 component VMReceiver {
     VM_INIT_DEF()
     include <queue.h>;
-    dataport queue_t crossvm_dp_0;
-    consumes SendEvent done;
+    dataport queue_t crossvm_receiver;
 }
 
 
 assembly {
     composition {
 
-        // Scenario 1: Native sender and receiver
-        // component Receiver receiver;
-        // component Sender sender;
-
-        // // AADL Event Data Port connection representation from sender.p1_out to reciever.p1_in
-        // connection seL4Notification pc1_event(from sender.p1_out_SendEvent, to receiver.p1_in_SendEvent);
-        // connection seL4SharedData pc1_queue(from sender.p1_out_queue, to receiver.p1_in_queue);
-
-
-        // Scenario 2: Nativer sender, VM receiver
-        // component Sender sender;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VMReceiver vmReceiver;
-        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
-
-        // connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
-
-        // Scenario 3: VM Sender, Native receiver
-        // component Receiver receiver;
-        // VM_GENERAL_COMPOSITION_DEF()
-        // component VMSender vmSender;
-        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
-
-        // connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
-        // connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
-
-
-
-        // Scenario 4: VM Sender and VM receiver
+        // Scenario 1: VM Sender and VM receiver and native receiver
         VM_GENERAL_COMPOSITION_DEF()
 
         component VMReceiver vmReceiver;
         VM_COMPONENT_CONNECTIONS_DEF(Receiver)
         component VMSender vmSender;
         VM_COMPONENT_CONNECTIONS_DEF(Sender)
+        component Receiver receiver;
         /* vm serial connections */
         VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
+        connection CASE_AADL_EventDataport event_conn_1(from vmSender.crossvm_sender, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
 
-        connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
-        connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
         connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
         connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+
+        // // Scenario 2: Native Sender and VM receiver and native receiver
+        // VM_GENERAL_COMPOSITION_DEF()
+
+        // component VMReceiver vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        // component Receiver receiver;
+        // component Sender sender;
+        // /* vm serial connections */
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
+        // connection CASE_AADL_EventDataport event_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
+
+        // connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
+
 
 
     }
     configuration {
 
-        sender.p1_out_queue_access = "W";
-        receiver.p1_in_queue_access = "R";
+        vmReceiver.crossvm_receiver_type = "vm";
+        vmSender.crossvm_sender_type = "vm";
+        receiver.p1_in_queue_type = "native";
+        sender.p1_out_queue = "native";
+        event_conn_1.with_signalling = true;
+        event_conn_1.size = 8192;
+
         sender._priority = 50;
         sender._domain = 1;
         receiver._priority = 50;
-        receiver._domain = 2;
+        receiver._domain = 0;
         receiver.p1_in_SendEvent_domain = 2;
-        vmReceiver.crossvm_dp_0 = "R";
-        vmSender.crossvm_dp_0 = "W";
         VM_GENERAL_CONFIGURATION_DEF()
         VM_CONFIGURATION_DEF(Receiver)
         VM_CONFIGURATION_DEF(Sender)
@@ -133,7 +113,6 @@ assembly {
         vmSender.simple_untyped12_pool = 12;
         vmSender.num_extra_frame_caps = 0;
         vmSender.extra_frame_map_address = 0;
-        cross_vm_conn_0.size = 8192;
 
     }
 }

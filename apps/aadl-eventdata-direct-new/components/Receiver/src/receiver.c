@@ -35,7 +35,7 @@ void p1_in_aadl_event_data_receive(counter_t numDropped, data_t *data) {
 // Callback would typically be avoid for safety critical systems. It is harder
 // to analyze since the callback handler is run on some arbitrary thread.
 //
-// NOTE: If we only need polling style receivers, we can get rid of SendEvent
+// NOTE: If we only need polling style receivers, we can get rid of queue
 
 recv_queue_t recvQueue;
 
@@ -46,7 +46,7 @@ bool p1_in_aadl_event_data_poll(counter_t *numDropped, data_t *data) {
 
 void p1_in_aadl_event_data_wait(counter_t *numDropped, data_t *data) {
     while (!p1_in_aadl_event_data_poll(numDropped, data)) {
-        p1_in_SendEvent_wait();
+        p1_in_queue_wait();
     }
 }
 
@@ -58,7 +58,7 @@ static void p1_in_handler(void *v) {
     while (p1_in_aadl_event_data_poll(&numDropped, &data)) {
     	p1_in_aadl_event_data_receive(numDropped, &data);
     }
-    while (! p1_in_SendEvent_reg_callback(&p1_in_handler, NULL));
+    while (! p1_in_queue_reg_callback(&p1_in_handler, NULL));
 }
 
 //------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ void run_wait(void) {
 }
 
 int run_callback(void) {
-     return p1_in_SendEvent_reg_callback(&p1_in_handler, NULL);
+     return p1_in_queue_reg_callback(&p1_in_handler, NULL);
 }
 
 void post_init(void) {

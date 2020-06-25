@@ -22,27 +22,16 @@
 #include <data.h>
 #include <queue.h>
 
-void done_emit_underlying(void) WEAK;
-static void done_emit(void) {
-  /* If the interface is not connected, the 'underlying' function will
-   * not exist.
-   */
-  if (done_emit_underlying) {
-    done_emit_underlying();
-  }
-}
-
 
 //------------------------------------------------------------------------------
 // Implementation of AADL Input Event Data Port (out) named "p1_out"
 //
-// NOTE: If we only need polling style receivers, we can get rid of the SendEvent
+// NOTE: If we only need polling style receivers, we can get rid of the queue
 
 // Assumption: only one thread is calling this and/or reading p1_in_recv_counter.
 void p1_out_aadl_event_data_send(data_t *data) {
     queue_enqueue(p1_out_queue, data);
-    p1_out_SendEvent_emit();
-    done_emit();
+    p1_out_queue_emit_underlying();
 }
 
 //------------------------------------------------------------------------------

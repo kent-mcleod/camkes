@@ -17,9 +17,6 @@ component Sender {
     include <queue.h>;
     control;
 
-    // p1_out - AADL Event Data Port (out) representation
-    // NOTE: If we only need polling style receivers, we can get rid of the SendEvent
-    emits SendEvent p1_out_SendEvent;
     dataport queue_t p1_out_queue;
 }
 

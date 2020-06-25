@@ -19,5 +19,4 @@ project(ComponentSender C)
 
 DeclareCAmkESComponent(Sender
     SOURCES src/sender.c
-    LIBS queue
 )
