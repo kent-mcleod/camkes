@@ -50,33 +50,33 @@ component VMReceiver {
 assembly {
     composition {
 
-        // // Scenario 1: VM Sender and VM receiver and native receiver
-        // VM_GENERAL_COMPOSITION_DEF()
-
-        // component VMReceiver vmReceiver;
-        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-        // component VMSender vmSender;
-        // VM_COMPONENT_CONNECTIONS_DEF(Sender)
-        // component Receiver receiver;
-        // /* vm serial connections */
-        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
-        // connection CASE_AADL_EventDataport event_conn_1(from vmSender.crossvm_sender, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
-
-        // connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
-        // connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
-
-        // Scenario 2: Native Sender and VM receiver and native receiver
+        // Scenario 1: VM Sender and VM receiver and native receiver
         VM_GENERAL_COMPOSITION_DEF()
 
         component VMReceiver vmReceiver;
         VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        component VMSender vmSender;
+        VM_COMPONENT_CONNECTIONS_DEF(Sender)
         component Receiver receiver;
-        component Sender sender;
         /* vm serial connections */
-        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
-        connection CASE_AADL_EventDataport event_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
+        VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
+        connection CASE_AADL_EventDataport event_conn_1(from vmSender.crossvm_sender, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
 
         connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
+        connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
+
+        // // Scenario 2: Native Sender and VM receiver and native receiver
+        // VM_GENERAL_COMPOSITION_DEF()
+
+        // component VMReceiver vmReceiver;
+        // VM_COMPONENT_CONNECTIONS_DEF(Receiver)
+        // component Receiver receiver;
+        // component Sender sender;
+        // /* vm serial connections */
+        // VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
+        // connection CASE_AADL_EventDataport event_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_receiver, to receiver.p1_in_queue);
+
+        // connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
 
 
 

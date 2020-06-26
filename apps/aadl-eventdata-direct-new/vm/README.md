@@ -21,223 +21,25 @@ there are domain configuration changes as well as camkes `composition` changes f
 some scenarios:
 
 ```
-commit 4f1d547a30165ef5521e0e19d7d54f1fade5cfce
+commit f17165687d3b1982649ae27e78dacedbe87ffff4
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
-Date:   Mon Feb 24 17:25:11 2020 +1100
-
-    scenario 4
-
-commit dc730fd33861ab7134f444bd59f6f06edef69e3b
-Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
-Date:   Mon Feb 24 17:23:43 2020 +1100
-
-    scenario 3
-
-commit b64c4e9afc658f3aa86b627547b7b2757728192a
-Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
-Date:   Mon Feb 24 17:23:24 2020 +1100
+Date:   Fri Jun 26 18:32:50 2020 +1000
 
     Scenario 2
+    
+    Native sender, VM receiver, Native receiver.
 
-commit fb24fdf4b9ce52ae1e44df872b611b0d55ed2fdf
+commit 991c131810a72af40f491440dd3f871435bd976c
 Author: Kent McLeod <Kent.Mcleod@data61.csiro.au>
-Date:   Mon Feb 24 17:22:33 2020 +1100
+Date:   Fri Jun 26 18:32:17 2020 +1000
 
-    scenario 1
-
-```
-
-## Scenario 1: Native sender, Native receiver
-
-```
-    component Receiver receiver;
-    component Sender sender;
-
-    // AADL Event Data Port connection representation from sender.p1_out to reciever.p1_in
-    connection seL4Notification pc1_event(from sender.p1_out_SendEvent, to receiver.p1_in_SendEvent);
-    connection seL4SharedData pc1_queue(from sender.p1_out_queue, to receiver.p1_in_queue);
-```
-
-
-```
-  virt_entry=e0000000
-ELF-loading image 'capdl-loader'
-  paddr=[6004e000..60216fff]
-  vaddr=[10000..1d8fff]
-  virt_entry=17c44
-Enabling hypervisor MMU and paging
-Jumping to kernel-image entry point...
-
-Bootstrapping kernel
-Booting all finished, dropped to user space
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothsender: sending
-ing: 1
-sender: sending: 2
-sender: sending: 3
-sender: sending: 4
-sender: sending: 5
-sender: sending: 6
-sender: sending: 7
-receiver: received: 1  numDropped: 0
-receiver: received: 2  numDropped: 0
-receiver: received: 3  numDropped: 0
-receiver: received: 4  numDropped: 0
-receiver: received: 5  numDropped: 0
-
-```
-## Scenario 2: Native sender, VM receiver
-```
-    // Scenario 2: Nativer sender, VM receiver
-    component Sender sender;
-    VM_GENERAL_COMPOSITION_DEF()
-    component VM vmReceiver;
-    VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-    /* vm serial connections */
-    VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver)
-
-    connection seL4GlobalAsynch event_conn_1(from sender.p1_out_SendEvent, to vmReceiver.done);
-    connection seL4SharedDataWithCaps cross_vm_conn_1(from sender.p1_out_queue, to vmReceiver.crossvm_dp_0);
-    connection seL4VMDTBPassthrough vm_dtb1(from vmReceiver.dtb_self, to vmReceiver.dtb);
-
+    Scenario 1
+    
+    VM sender, VM receiver, Native receiver
 
 ```
 
-To start the receiver on the VM side, the `receiver` program (located in `vm/apps/receiver`)
-needs to be called: `receiver /dev/uio0 4096` to attach to the receiving end of the connectors.
-```
-Welcome to Buildroot
-buildroot login: root
-# receiver /dev/uio0 4096
-sender: sending: 2831
-sender: sending: 2832
-sender: sending: 2833
-sender: sending: 2834
-sender: sending: 2835
-sender: sending: 2836
-sender: sending: 2837
-sender: sending: 2838
-sender: sending: 2839
-sender: sending: 2840
-sender: sending: 2841
 
-Receiver: received: 2835  numDropped: 2834
-Receiver: received: 2836  numDropped: 0
-Receiver: received: 2837  numDropped: 0
-Receiver: received: 2838  numDropped:sender: 0
- sending: 2842
-sender: sending: 2843
-sender: sending: 2844
-sender: sending: 2845
-sender: sending: 2846
-sender: sending: 2847
-Receiver: received: 2841  numDropped: 2
-Receiver: received: 2842  numDropped: 0
-Receiver: received: 2843  numDropped: 0
-Receiver: received: 2844  numDropped: 0
-Receiver: received: 2845  numDropped: 0
-sender: sending: 2848
-sender: sending: 2849
-sender: sendinReceiver: received: 2846  numDroppedg: 2850
-: 0
-sender: sending: 2851
-Receiver: received: 2847  numDropped: 0
-
-```
-
-## Scenario 3: VM sender, Native receiver
-
-```
-    // Scenario 3: VM Sender, Native receiver
-    component Receiver receiver;
-    VM_GENERAL_COMPOSITION_DEF()
-    component VM vmSender;
-    VM_COMPONENT_CONNECTIONS_DEF(Sender)
-    /* vm serial connections */
-    VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Sender)
-
-    connection seL4Notification event_conn_1(from vmSender.ready, to receiver.p1_in_SendEvent);
-    connection seL4SharedDataWithCaps cross_vm_conn_1(from vmSender.crossvm_dp_0,  to receiver.p1_in_queue);
-    connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
-```
-
-The sender in the VM needs to be started by running `sender /dev/uio0 4096`. This calls the
-sender binary located in `vm/apps/sender`.
-```
-[    4.075787] connector 0000:00:02.0: assign IRQ: got 21
-[    4.080868] Event Bar (dev-0) initalised
-[    4.087914] 2 Dataports (dev-0) initalised
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-
-Welcome to Buildroot
-buildroot login: receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-
-# sender /dev/uio0 4096
-receiver: received nothing
-receiver: received nothing
-sender: sending: 1
-sender: sending: 2
-sender: sending: 3
-receiver: received: 1  numDropped: 0
-receiver: received: 2  numDropped: 0
-receiver: received: 3  numDropped: 0
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-recsender: sending: 4
-sender: sendingeiver: re: 5
-sender: sending: 6
-sender: sceived noending: 7
-sender: sending: 8
-thing
-receisender: sending: 9
-ver: received: 4  numDropped: 0
-receiver: received: 5  numDropped: 0
-receiver: received: 6  numDropped: 0
-receiver: received: 7  numDropped: 0
-receiver: received: 8  numDropped: 0
-receiver: received: 9  numDropped: 0
-receiver: received nothing
-receiver: received nothing
-receiver: received nothing
-```
-## Scenario 4: VM sender, VM receiver
-
-The `seL4GlobalAsynch` connector is used to allow the VM to receive signals. Because the VM component only has
-one thread that can be used to receive events, a custom connector is used.
-
-```
-    // Scenario 4: VM Sender and VM receiver
-    VM_GENERAL_COMPOSITION_DEF()
-
-    component VM vmReceiver;
-    VM_COMPONENT_CONNECTIONS_DEF(Receiver)
-    component VM vmSender;
-    VM_COMPONENT_CONNECTIONS_DEF(Sender)
-    /* vm serial connections */
-    VM_VIRTUAL_SERIAL_COMPOSITION_DEF(Receiver,Sender)
-
-    connection seL4GlobalAsynch event_conn_1(from vmSender.ready, to vmReceiver.done);
-    connection seL4SharedDataWithCaps cross_vm_conn_0(from vmSender.crossvm_dp_0, to vmReceiver.crossvm_dp_0);
-    connection seL4VMDTBPassthrough vm_dtb(from vmReceiver.dtb_self, to vmReceiver.dtb);
-    connection seL4VMDTBPassthrough vm_dtb1(from vmSender.dtb_self, to vmSender.dtb);
-```
 
 When using 2 VMs, the serial server is used to switch input between each VM. The serial server has an escape
 character `@` for switching inputs. Switching to client 1 from client 0 would be by `@1`.
