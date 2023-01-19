@@ -29,10 +29,10 @@ int run(void)
     for (int i = 0; i < sz; i++) {
         p->operands[i] = operands[i];
     }
-
-    dataport_ptr_t ptr = a_calculate(dataport_wrap_ptr((void *)p));
-    p = dataport_unwrap_ptr(ptr);
-
+    irq2_emit_underlying();
+    irq_wait();
+    p = (void *)d + 2048;
     printf("%s: result was %d\n", name, p->result);
+
     return 0;
 }
