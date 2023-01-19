@@ -1,0 +1,1 @@
+set(NUM_NODES 2)

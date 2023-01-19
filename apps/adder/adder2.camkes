@@ -1,0 +1,38 @@
+/*
+ * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+import <std_connector.camkes>;
+
+//import "components/Adder/Adder.camkes";
+import "components/Client/Client.camkes";
+
+component Adder {
+    hardware;
+    dataport Buf d;
+    emits DataAvailable irq;
+
+}
+
+
+assembly {
+    composition {
+        component Adder adder;
+        component Client client;
+
+        connection seL4HardwareMMIO s(from client.d, to adder.d);
+        connection seL4HardwareInterrupt irq(from adder.irq, to client.irq);
+        //connection seL4RPCCall p(from client.a, to adder.a);
+    }
+
+    configuration {
+        adder.d_paddr = 0x60000000;
+        adder.d_size = 0x1000;
+        adder.irq_irq_number = 4;
+
+    }
+
+}
+

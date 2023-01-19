@@ -9,13 +9,69 @@ import <std_connector.camkes>;
 import "components/Adder/Adder.camkes";
 import "components/Client/Client.camkes";
 
+component Kernel {
+    hardware;
+}
+
+
+assembly {
+    composition {
+        component Kernel node0;
+        component Kernel node1;
+
+    }
+
+    configuration {
+        node0.node_id = 0;
+        node1.node_id = 1;
+
+
+        node0.memory = [{
+            "node": "/memory@40000000",
+            "#size-cells": 2,
+            "#address-cells": 2,
+            "reg": [
+                {"start": 0x40000000, "size": 0x10000000 },
+            ]}];
+        node0.reserved = [
+                {"start": 0x50000000, "size": 0x10000000 },
+            ];
+        node0.shared_pool = [
+            {"start": 0x60000000, "size": 0x10000000 },
+        ];
+
+        node1.memory = [{
+            "node": "/memory@40000000",
+            "#size-cells": 2,
+            "#address-cells": 2,
+            "reg": [
+                {"start": 0x50000000, "size": 0x10000000 },
+            ]}];
+        node1.reserved = [
+                {"start": 0x40000000, "size": 0x10000000 },
+            ];
+        node1.shared_pool = [ 
+            {"start": 0x60000000, "size": 0x10000000 },
+        ];
+
+    }
+
+}
+
+
 assembly {
     composition {
         component Adder adder;
         component Client client;
 
         connection seL4SharedData s(from adder.d, to client.d);
-        connection seL4RPCCall p(from client.a, to adder.a);
+        connection seL4NotificationNative irq(from client.irq2, to adder.irq);
+        connection seL4NotificationNative irq2(from adder.irq2, to client.irq);
+    }
+
+    configuration {
+        adder.node = "node1";
+        client.node = "node0";
     }
 }
 
