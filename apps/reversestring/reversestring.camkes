@@ -7,22 +7,60 @@
 import <std_connector.camkes>;
 #include <buffer.h>
 
+component Kernel {
+    hardware;
+}
+
+
 component Server {
     control;
-    dataport Buf(REVERSE_STRING_BUFSIZE) buffer;
+    dataport Buf buffer;
 }
 
 component Client {
     control;
-    dataport Buf(REVERSE_STRING_BUFSIZE) buffer;
+    dataport Buf buffer;
 }
 
 assembly {
     composition {
         component Server server;
         component Client client;
+        component Kernel node0;
+        component Kernel node1;
 
         connection seL4SharedData conn(from client.buffer, to server.buffer);
     }
+    configuration {
+
+        server.node = "node0";
+        client.node = "node1";
+
+        node0.memory = [{
+            "node": "/memory@40000000",
+            "#size-cells": 2,
+            "#address-cells": 2,
+            "reg": [
+                {"start": 0x40000000, "size": 0x10000000 },
+            ]}];
+        node0.node_id = 0;
+        node0.shared_pool = [ 
+                {"start": 0x60000000, "size": 0x10000000 },
+        ];
+
+
+        node1.memory = [{
+            "node": "/memory@40000000",
+            "#size-cells": 2,
+            "#address-cells": 2,
+            "reg": [
+                {"start": 0x50000000, "size": 0x10000000 },
+            ]}];
+        node1.node_id = 1;
+        node1.shared_pool = [ 
+                {"start": 0x60000000, "size": 0x10000000 },
+        ];
+    }
+
 }
 

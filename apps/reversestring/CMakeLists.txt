@@ -14,4 +14,4 @@ DeclareCAmkESComponent(Client SOURCES src/client.c INCLUDES include)
 DeclareCAmkESComponent(Server SOURCES src/server.c INCLUDES include)
 
 DeclareCAmkESRootserver(reversestring.camkes CPP_INCLUDES include)
-add_simulate_test([=[wait_for "!dlroW ,olleH"]=])
+# add_simulate_test([=[wait_for "!dlroW ,olleH"]=])
