@@ -8,16 +8,18 @@ cmake_minimum_required(VERSION 3.8.2)
 include(settings.cmake)
 project(camkes C CXX ASM)
 
+set(SEL4_CONFIG_FILE ${CMAKE_CURRENT_LIST_DIR}/settings.cmake)
+
 find_package(camkes-tool REQUIRED)
 find_package(global-components REQUIRED)
 find_package(sel4_projects_libs REQUIRED)
 
-# Set some options we know we need here. Applications can override them
 set(CapDLLoaderMaxObjects 20000 CACHE STRING "")
-set(KernelRootCNodeSizeBits 17 CACHE STRING "")
 if(KernelArchARM)
     ApplyData61ElfLoaderSettings(${KernelPlatform} ${KernelSel4Arch})
 endif()
+set(ElfLoaderNumNodes ${NUM_NODES})
+
 camkes_tool_setup_camkes_build_environment()
 
 sel4_projects_libs_import_libraries()

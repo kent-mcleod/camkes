@@ -61,7 +61,8 @@ if(ARM_HYP)
 endif()
 
 correct_platform_strings()
-
+set(KernelRootCNodeSizeBits 17 CACHE STRING "")
+set(ARM_CPU cortex-a15 CACHE STRING "")
 find_package(seL4 REQUIRED)
 sel4_configure_platform_settings()
 
