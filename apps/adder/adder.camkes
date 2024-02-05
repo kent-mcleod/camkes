@@ -40,6 +40,8 @@ assembly {
             {"start": 0x60000000, "size": 0x10000000 },
         ];
 
+        node0.spi_irqs = [32, 33, 34];
+
         node1.memory = [{
             "node": "/memory@40000000",
             "#size-cells": 2,
@@ -53,6 +55,7 @@ assembly {
         node1.shared_pool = [
             {"start": 0x60000000, "size": 0x10000000 },
         ];
+        node1.spi_irqs = [35, 36, 37];
 
     }
 
