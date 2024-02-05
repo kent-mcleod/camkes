@@ -16,6 +16,7 @@ void notification_event_loop(void)
     while (true) {
         seL4_Word badge;
         seL4_Wait(event_notification, &badge);
+        notification_ready_notification_ack();
         event_handler(data);
     }
 }

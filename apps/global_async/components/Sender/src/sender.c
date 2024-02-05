@@ -30,6 +30,7 @@ void sending_data_loop(void)
         notification_signal_emit_underlying();
         seL4_Word badge;
         seL4_Wait(event_notification, &badge);
+        notification_ready_notification_ack();
     }
 }
 
